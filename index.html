@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 1l6 3.5v7L8 15l-6-3.5v-7z' fill='none' stroke='%23ff6a00' stroke-width='1.4'/><circle cx='8' cy='8' r='2.2' fill='%23ff1200'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-FYrbuYnQ.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DY3KFnlR.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-DODUYnDQ.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-fRi_JTpN.css">
 </head>
 <body class="mode-mon">
 <header>
@@ -43,6 +43,22 @@
 </div>
 
 <main>
+  <!-- 系統状態レール: 実際の接続・受信状態だけを出す（架空の指標は置かない） -->
+  <aside class="rail" aria-label="系統状態">
+    <div class="rail-cell" id="railLink" data-state="wait">
+      <b>通信</b><i>LINK</i><em id="railLinkV">—</em>
+    </div>
+    <div class="rail-cell" id="railObsv" data-state="wait">
+      <b>観測</b><i>OBSV</i><em id="railObsvV">—</em>
+    </div>
+    <div class="rail-cell" id="railGnss" data-state="wait">
+      <b>測位</b><i>GNSS</i><em id="railGnssV">—</em>
+    </div>
+    <div class="rail-cell rail-mode" id="railMode" data-state="ok">
+      <b>系統</b><i>MODE</i><em id="railModeV">監視</em>
+    </div>
+  </aside>
+
   <!-- 平面図 -->
   <section class="panel" id="pMap">
     <div class="hd">
