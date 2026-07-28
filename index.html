@@ -8,9 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='3' fill='%23ff3d33'/><circle cx='8' cy='8' r='6.5' fill='none' stroke='%234db8ff' stroke-width='1'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Bbjt6DDK.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DsTE8sMN.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='3' fill='%23ff4438'/><circle cx='8' cy='8' r='6.5' fill='none' stroke='%2345c8ff' stroke-width='1'/></svg>">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-b2WTUlzB.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-B2oveXg3.css">
 </head>
 <body class="mode-mon">
 <header>
@@ -21,44 +21,46 @@
   <button class="ghost" id="btnReplay" type="button" title="宮城県沖M7.3のEEW系列を再生してEEW画面をテスト">リプレイデモ</button>
 </header>
 
-<div id="banner"><b>緊急地震速報</b><span id="epiBanner">強い揺れに警戒してください</span><span class="rep" id="repNo">—</span></div>
+<div id="banner"><b>緊急地震速報</b><span>強い揺れに警戒してください</span><span class="rep" id="repNo">—</span></div>
 
 <main>
-  <section class="panel" id="v3d">
-    <div class="hd">3D HYPOCENTER VIEW<span class="tag" id="tag3d">最近の震源（深さ散布）</span></div>
-    <div class="cnv" id="view3d"></div>
+  <!-- 主役: 平面図 -->
+  <section class="panel" id="pMap">
+    <div class="hd">2D SURFACE MAP<span class="tag" id="tag2d">最近の震央</span></div>
+    <div class="cnv"><div id="map2d"></div></div>
   </section>
 
-  <section class="panel">
-    <div class="hd">2D SURFACE MAP
-      <span class="tabs" id="mapTabs" role="group" aria-label="表示切替">
-        <button class="tab on" id="tabMap" type="button">震央</button><button class="tab" id="tabKmoni" type="button">強震モニタ</button>
-      </span>
-      <span class="tag" id="tag2d">最近の地震</span></div>
-    <div class="cnv">
-      <div id="map2d"></div>
-      <div id="kmoniView" hidden>
-        <div class="kmoni-frame">
-          <img id="kmoniBase" alt="" draggable="false">
-          <img id="kmoniImg" alt="強震モニタ リアルタイム震度" draggable="false">
-        </div>
-        <div class="kmoni-bar">
-          <span>KYOSHIN MONITOR (NIED)</span>
-          <span id="kmoniStatus">未設定</span>
-          <button class="ghost" id="kmoniCfg" type="button">設定</button>
-        </div>
-        <div class="kmoni-setup" id="kmoniSetup" hidden>
-          <p>強震モニタの表示には中継プロキシが必要です。<code>workers/kmoni-proxy.js</code> をCloudflare Workersにデプロイし、そのURLを入力してください。</p>
-          <div class="row">
-            <input id="kmoniUrl" type="url" placeholder="https://your-worker.workers.dev" spellcheck="false">
-            <button class="ghost" id="kmoniSave" type="button">保存</button>
-          </div>
-        </div>
+  <!-- 平常時の主役: 各地の揺れ状況 -->
+  <section class="panel" id="pKmoni">
+    <div class="hd">KYOSHIN MONITOR
+      <span class="livedot" id="kmoniPulse"></span>
+      <span class="tag"><b id="kmoniTime">--:--:--</b><span id="kmoniLag">接続中…</span></span>
+    </div>
+    <div class="cnv kmoni-cnv">
+      <canvas id="kmoniCanvas"></canvas>
+      <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
+    </div>
+    <div class="kmoni-bar">
+      <span>NIED 強震モニタ / リアルタイム震度（地表）</span>
+      <button class="ghost" id="kmoniCfg" type="button">設定</button>
+    </div>
+    <div class="kmoni-setup" id="kmoniSetup" hidden>
+      <p>中継プロキシのURL。空欄にすると既定のプロキシに戻ります。</p>
+      <div class="row">
+        <input id="kmoniUrl" type="url" placeholder="https://your-worker.workers.dev" spellcheck="false">
+        <button class="ghost" id="kmoniSave" type="button">保存</button>
       </div>
     </div>
   </section>
 
-  <section class="panel" id="info">
+  <!-- 立体図 -->
+  <section class="panel" id="p3d">
+    <div class="hd">3D HYPOCENTER VIEW<span class="tag" id="tag3d">最近の震源（深さ断面）</span></div>
+    <div class="cnv" id="view3d"></div>
+  </section>
+
+  <!-- 状態 -->
+  <section class="panel" id="pInfo">
     <div class="hd">STATUS<span class="tag" id="tagInfo">モニタリング</span></div>
     <div class="body">
       <!-- EEWモード -->
@@ -90,6 +92,7 @@
       <div class="stats mon-only">
         <div class="stat"><div class="k">受信済み地震情報</div><div class="v"><span id="statCount">0</span><small> 件</small></div></div>
         <div class="stat"><div class="k">期間内最大震度</div><div class="v" id="statMax">-</div></div>
+        <div class="stat"><div class="k">最新</div><div class="v" id="statLatest" style="font-size:13px">—</div></div>
       </div>
       <div class="tblwrap mon-only">
         <table>
