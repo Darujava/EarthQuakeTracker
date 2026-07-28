@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 1l6 3.5v7L8 15l-6-3.5v-7z' fill='none' stroke='%23ff6a00' stroke-width='1.4'/><circle cx='8' cy='8' r='2.2' fill='%23ff1200'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-DODUYnDQ.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-fRi_JTpN.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Bw2Rg-sY.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-Dg--Vj91.css">
 </head>
 <body class="mode-mon">
 <header>
@@ -30,6 +30,10 @@
   </span>
 
   <div class="clock"><span class="clock-tz">JST</span><span id="clock">--:--:--</span></div>
+  <button class="ghost" id="btnSound" type="button" aria-pressed="false"
+          title="緊急地震速報の警報音・秒読みの音を鳴らす">
+    <span id="btnSoundJp">音声 切</span><i id="btnSoundEn">SOUND OFF</i>
+  </button>
   <button class="ghost" id="btnReplay" type="button" title="宮城県沖M7.3のEEW系列を再生してEEW画面をテスト">
     訓練再生<i>REPLAY</i>
   </button>
@@ -150,6 +154,14 @@
         <div class="stat"><div class="k">最大震度<i>MAX INT.</i></div><div class="v" id="statMax">-</div></div>
         <div class="stat"><div class="k">最新<i>LATEST</i></div><div class="v small" id="statLatest">—</div></div>
       </div>
+      <!-- 地表の観測震度（気象庁発表の地点別震度）。推定ではなく実測 -->
+      <section class="sc mon-only" id="shindoChart" aria-label="地表の観測震度の分布">
+        <div class="sc-title">
+          <span class="lbl"><b>地表の観測震度</b><i>OBSERVED SURFACE INTENSITY</i></span>
+          <span class="sc-axis">観測点数</span>
+        </div>
+      </section>
+
       <div class="tblwrap mon-only">
         <table>
           <thead><tr><th>時刻</th><th>震央</th><th>M</th><th>深さ</th><th>震度</th></tr></thead>
