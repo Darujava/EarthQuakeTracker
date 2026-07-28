@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 1l6 3.5v7L8 15l-6-3.5v-7z' fill='none' stroke='%23ff6a00' stroke-width='1.4'/><circle cx='8' cy='8' r='2.2' fill='%23ff1200'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Bw2Rg-sY.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-Dg--Vj91.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BoezkzwQ.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-_gsC7CKG.css">
 </head>
 <body class="mode-mon">
 <header>
@@ -83,6 +83,22 @@
       <canvas id="kmoniCanvas"></canvas>
       <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
     </div>
+    <!-- 画像を解析して得た観測点ごとの数値。推定ではなく画像に描かれている観測値 -->
+    <div class="rt">
+      <div class="rt-reads">
+        <span class="rt-cell">
+          <b>最寄り<i>NEAREST</i></b>
+          <em id="rtNearName">—</em><span class="rt-v" id="rtNearV">—</span>
+        </span>
+        <span class="rt-cell">
+          <b>全国最大<i>PEAK</i></b>
+          <em id="rtMaxName">—</em><span class="rt-v" id="rtMaxV">—</span>
+        </span>
+        <span class="rt-n"><b id="rtCount">—</b><i>解析点</i></span>
+      </div>
+      <canvas id="rtChart" aria-hidden="true"></canvas>
+      <p class="rt-cap">リアルタイム震度 直近3分<span id="rtNote"></span></p>
+    </div>
     <div class="kmoni-bar">
       <span>NIED 強震モニタ / リアルタイム震度（地表）</span>
       <button class="ghost" id="kmoniCfg" type="button">設定<i>CONFIG</i></button>
@@ -103,7 +119,16 @@
       <span class="tag" id="tag3d">最近の震源（地下・実スケール）</span>
       <button class="ghost mini" id="btnResetView" type="button">視点<i>RESET</i></button>
     </div>
-    <div class="cnv"><div id="view3d"></div></div>
+    <div class="cnv">
+      <div id="view3d"></div>
+      <!-- 深さの色スケール。過去震源の雲がどの深さかを読むための凡例 -->
+      <div class="depthkey" id="depthKey">
+        <span class="dk-t"><b>深さ</b><i>DEPTH</i></span>
+        <span class="dk-bar" aria-hidden="true"></span>
+        <span class="dk-l"><i>0</i><i>100</i><i>300</i><i>700km</i></span>
+        <span class="dk-n" id="depthCount">過去の震源を読み込み中…</span>
+      </div>
+    </div>
   </section>
 
   <!-- 状態 -->
