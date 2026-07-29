@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CZsyTdhS.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-D7aE0kPP.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-HaBY-nTS.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CqsYNvaL.css">
 </head>
 <body class="mode-mon">
 
@@ -101,32 +101,25 @@
       </div>
     </article>
 
-    <article class="pn" id="pRt">
+    <article class="pn" id="pRegion">
       <div class="pn-hd">
-        <span class="pn-t"><b>震度の推移</b><i>INTENSITY TREND</i></span>
+        <span class="pn-t"><b>全国の観測点</b><i>NATIONWIDE</i></span>
+        <span class="pn-m dim">推移は各点で自動縮尺</span>
         <span class="pn-m">直近3分 · 1Hz</span>
       </div>
-      <div class="pn-body rt">
+      <div class="pn-body region">
+        <canvas id="rtChart" aria-hidden="true"></canvas>
         <div class="rt-reads">
           <span class="rt-cell"><b>最寄り<i>NEAREST</i></b><em id="rtNearName">—</em><span class="rt-v" id="rtNearV">—</span></span>
           <span class="rt-cell"><b>全国最大<i>PEAK</i></b><em id="rtMaxName">—</em><span class="rt-v" id="rtMaxV">—</span></span>
         </div>
-        <canvas id="rtChart" aria-hidden="true"></canvas>
+        <div class="rg-grid" id="regionBoard"></div>
       </div>
     </article>
   </section>
 
-  <!-- 中央列: 震央分布 / 震源立体図 -->
+  <!-- 中央列: 震源立体図（主役なので大きく） / 震央分布 -->
   <section class="col col-b">
-    <article class="pn" id="pMap">
-      <div class="pn-hd">
-        <span class="pn-t"><b>震央分布</b><i>EPICENTER MAP</i></span>
-        <span class="pn-m" id="tag2d">最近の震央</span>
-        <span class="pn-m dim">WEB MERCATOR / EPSG:3857</span>
-      </div>
-      <div class="pn-body"><div id="map2d"></div></div>
-    </article>
-
     <article class="pn" id="p3d">
       <div class="pn-hd">
         <span class="pn-t"><b>震源立体図</b><i>HYPOCENTER DEPTH</i></span>
@@ -144,6 +137,15 @@
         </div>
       </div>
     </article>
+    <article class="pn" id="pMap">
+      <div class="pn-hd">
+        <span class="pn-t"><b>震央分布</b><i>EPICENTER MAP</i></span>
+        <span class="pn-m" id="tag2d">最近の震央</span>
+        <span class="pn-m dim">WEB MERCATOR / EPSG:3857</span>
+      </div>
+      <div class="pn-body"><div id="map2d"></div></div>
+    </article>
+
   </section>
 
   <!-- 右列: 統計 / 地表の観測震度 / 観測履歴 -->
@@ -157,24 +159,19 @@
       </div>
     </article>
 
-    <article class="pn" id="pShindo">
+    <article class="pn" id="pQuake">
       <div class="pn-hd">
-        <span class="pn-t"><b>地表の観測震度</b><i>OBSERVED SURFACE</i></span>
-        <span class="pn-m dim">観測点数</span>
-      </div>
-      <div class="pn-body" id="shindoChart"></div>
-    </article>
-
-    <article class="pn" id="pLog">
-      <div class="pn-hd">
-        <span class="pn-t"><b>観測履歴</b><i>EVENT LOG</i></span>
+        <span class="pn-t"><b>地震情報</b><i>EVENT LOG</i></span>
         <span class="pn-m dim">気象庁発表</span>
       </div>
-      <div class="pn-body tblwrap">
-        <table>
-          <thead><tr><th>時刻</th><th>震央</th><th>M</th><th>深さ</th><th>震度</th></tr></thead>
-          <tbody id="quakeRows"></tbody>
-        </table>
+      <div class="pn-body quakebox">
+        <div class="sc" id="shindoChart"></div>
+        <div class="tblwrap">
+          <table>
+            <thead><tr><th>時刻</th><th>震央</th><th>M</th><th>深さ</th><th>震度</th></tr></thead>
+            <tbody id="quakeRows"></tbody>
+          </table>
+        </div>
       </div>
     </article>
   </section>
