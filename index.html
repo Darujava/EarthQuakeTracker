@@ -7,208 +7,229 @@
   <title>EarthQuakeTracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 1l6 3.5v7L8 15l-6-3.5v-7z' fill='none' stroke='%23ff6a00' stroke-width='1.4'/><circle cx='8' cy='8' r='2.2' fill='%23ff1200'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-DGnplc9N.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BiJaZdJ5.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CZsyTdhS.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-D7aE0kPP.css">
 </head>
 <body class="mode-mon">
-<header>
+
+<!-- 画面全体にかける計器の質感。情報は載せない -->
+<div class="fx fx-scan" aria-hidden="true"></div>
+<div class="fx fx-vig" aria-hidden="true"></div>
+<div class="fx fx-sweep" aria-hidden="true"></div>
+
+<header class="hd">
   <div class="brand">
-    <span class="mark" aria-hidden="true"></span>
-    <span class="brand-jp">地震観測システム</span>
-    <span class="brand-en">EARTHQUAKE TRACKER</span>
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-t">
+      <b>地震観測システム</b>
+      <i>SEISMIC OPERATIONS CENTER</i>
+    </span>
   </div>
 
-  <span class="pill" id="connPill" data-status="connecting">
-    <span class="dot"></span>
-    <span class="pill-jp">受信</span><span class="pill-en" id="connLabel">CONNECTING</span>
-  </span>
-  <span class="pill modepill">
-    <span class="dot"></span>
-    <span class="pill-jp" id="modeName">監視中</span><span class="pill-en" id="modeNameEn">MONITORING</span>
-  </span>
+  <div class="hd-pills">
+    <span class="pill" id="connPill" data-status="connecting">
+      <span class="dot"></span><b class="pill-jp">受信</b><i id="connLabel">CONNECTING</i>
+    </span>
+    <span class="pill modepill">
+      <span class="dot"></span><b class="pill-jp" id="modeName">全系監視</b><i id="modeNameEn">MONITORING</i>
+    </span>
+  </div>
 
-  <div class="clock"><span class="clock-tz">JST</span><span id="clock">--:--:--</span></div>
-  <button class="ghost" id="btnSound" type="button" aria-pressed="false"
-          title="緊急地震速報の警報音・秒読みの音を鳴らす">
-    <span id="btnSoundJp">音声 切</span><i id="btnSoundEn">SOUND OFF</i>
-  </button>
-  <button class="ghost" id="btnReplay" type="button" title="宮城県沖M7.3のEEW系列を再生してEEW画面をテスト">
-    訓練再生<i>REPLAY</i>
-  </button>
+  <div class="hd-meta">
+    <span class="meta-k">ELAPSED / 経過</span>
+    <span class="meta-v" id="elapsed">00:00:00</span>
+  </div>
+
+  <div class="hd-clock"><span class="tz">JST</span><span id="clock">--:--:--</span></div>
+
+  <div class="hd-btns">
+    <button class="btn" id="btnSound" type="button" aria-pressed="false"
+            title="緊急地震速報の警報音・秒読みの音を鳴らす">
+      <b id="btnSoundJp">音声 切</b><i id="btnSoundEn">SOUND OFF</i>
+    </button>
+    <button class="btn" id="btnReplay" type="button"
+            title="宮城県沖M7.3のEEW系列を再生してEEW画面をテスト">
+      <b>警報テスト</b><i>DRILL</i>
+    </button>
+  </div>
 </header>
 
-<div id="banner">
-  <span class="banner-alarm" aria-hidden="true"><b>警報</b><i>EMERGENCY</i></span>
-  <span class="banner-msg">緊急地震速報<em>強い揺れに警戒してください</em></span>
-  <span class="rep" id="repNo">—</span>
-  <span class="banner-alarm" aria-hidden="true"><b>警報</b><i>EMERGENCY</i></span>
-</div>
+<!-- 警報時のみ現れる斜線帯 -->
+<div class="hazard" aria-hidden="true"></div>
 
-<main>
-  <!-- 系統状態レール: 実際の接続・受信状態だけを出す（架空の指標は置かない） -->
+<main class="board">
+  <!-- 系統状態: 実際の接続・受信状態だけを出す（架空の指標は置かない） -->
   <aside class="rail" aria-label="系統状態">
-    <div class="rail-cell" id="railLink" data-state="wait">
-      <b>通信</b><i>LINK</i><em id="railLinkV">—</em>
-    </div>
-    <div class="rail-cell" id="railObsv" data-state="wait">
-      <b>観測</b><i>OBSV</i><em id="railObsvV">—</em>
-    </div>
-    <div class="rail-cell" id="railGnss" data-state="wait">
-      <b>測位</b><i>GNSS</i><em id="railGnssV">—</em>
-    </div>
-    <div class="rail-cell rail-mode" id="railMode" data-state="ok">
-      <b>系統</b><i>MODE</i><em id="railModeV">監視</em>
-    </div>
+    <div class="rail-cell" id="railLink" data-state="wait"><b>通信</b><i>LINK</i><em id="railLinkV">—</em></div>
+    <div class="rail-cell" id="railObsv" data-state="wait"><b>観測</b><i>OBSV</i><em id="railObsvV">—</em></div>
+    <div class="rail-cell" id="railGnss" data-state="wait"><b>測位</b><i>GNSS</i><em id="railGnssV">—</em></div>
+    <div class="rail-cell rail-mode" id="railMode" data-state="ok"><b>系統</b><i>MODE</i><em id="railModeV">監視</em></div>
+    <span class="rail-fill" aria-hidden="true"></span>
+    <span class="rail-tag">第三観測系統</span>
   </aside>
 
-  <!-- 平面図 -->
-  <section class="panel" id="pMap">
-    <div class="hd">
-      <span class="lbl"><b>平面図</b><i>2D SURFACE MAP</i></span>
-      <span class="tag" id="tag2d">最近の震央</span>
-    </div>
-    <div class="cnv"><div id="map2d"></div></div>
+  <!-- 左列: 各地の揺れ / リアルタイム震度の推移 -->
+  <section class="col col-a">
+    <article class="pn" id="pKmoni">
+      <div class="pn-hd">
+        <span class="pn-t"><b>各地の揺れ</b><i>REALTIME INTENSITY</i></span>
+        <span class="livedot" id="kmoniPulse"></span>
+        <span class="pn-m" id="kmoniTime">--:--:--</span>
+        <span class="pn-m" id="kmoniLag">接続中…</span>
+        <span class="pn-m ok"><b id="rtCount">—</b> 解析点</span>
+      </div>
+      <div class="pn-body kmoni-cnv">
+        <canvas id="kmoniCanvas"></canvas>
+        <p class="cnv-note" aria-hidden="true">
+          SURFACE SINDO / 地表のリアルタイム震度<br>
+          <span class="ok">NIED 強震モニタ · 1Hz · 画像解析</span>
+        </p>
+        <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
+      </div>
+      <div class="pn-foot">
+        <span>NIED 強震モニタ / リアルタイム震度（地表）</span>
+        <button class="btn mini" id="kmoniCfg" type="button"><b>設定</b><i>CONFIG</i></button>
+      </div>
+      <div class="kmoni-setup" id="kmoniSetup" hidden>
+        <p>中継プロキシのURL。空欄にすると既定のプロキシに戻ります。</p>
+        <div class="row">
+          <input id="kmoniUrl" type="url" placeholder="https://your-worker.workers.dev" spellcheck="false">
+          <button class="btn mini" id="kmoniSave" type="button"><b>保存</b><i>SAVE</i></button>
+        </div>
+      </div>
+    </article>
+
+    <article class="pn" id="pRt">
+      <div class="pn-hd">
+        <span class="pn-t"><b>震度の推移</b><i>INTENSITY TREND</i></span>
+        <span class="pn-m">直近3分 · 1Hz</span>
+      </div>
+      <div class="pn-body rt">
+        <div class="rt-reads">
+          <span class="rt-cell"><b>最寄り<i>NEAREST</i></b><em id="rtNearName">—</em><span class="rt-v" id="rtNearV">—</span></span>
+          <span class="rt-cell"><b>全国最大<i>PEAK</i></b><em id="rtMaxName">—</em><span class="rt-v" id="rtMaxV">—</span></span>
+        </div>
+        <canvas id="rtChart" aria-hidden="true"></canvas>
+      </div>
+    </article>
   </section>
 
-  <!-- 各地の揺れ -->
-  <section class="panel" id="pKmoni">
-    <div class="hd">
-      <span class="lbl"><b>各地の揺れ</b><i>KYOSHIN MONITOR</i></span>
-      <span class="livedot" id="kmoniPulse"></span>
-      <span class="tag"><b id="kmoniTime">--:--:--</b><span id="kmoniLag">接続中…</span></span>
-    </div>
-    <div class="cnv kmoni-cnv">
-      <canvas id="kmoniCanvas"></canvas>
-      <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
-    </div>
-    <!-- 画像を解析して得た観測点ごとの数値。推定ではなく画像に描かれている観測値 -->
-    <div class="rt">
-      <div class="rt-reads">
-        <span class="rt-cell">
-          <b>最寄り<i>NEAREST</i></b>
-          <em id="rtNearName">—</em><span class="rt-v" id="rtNearV">—</span>
-        </span>
-        <span class="rt-cell">
-          <b>全国最大<i>PEAK</i></b>
-          <em id="rtMaxName">—</em><span class="rt-v" id="rtMaxV">—</span>
-        </span>
-        <span class="rt-n"><b id="rtCount">—</b><i>解析点</i></span>
+  <!-- 中央列: 震央分布 / 震源立体図 -->
+  <section class="col col-b">
+    <article class="pn" id="pMap">
+      <div class="pn-hd">
+        <span class="pn-t"><b>震央分布</b><i>EPICENTER MAP</i></span>
+        <span class="pn-m" id="tag2d">最近の震央</span>
+        <span class="pn-m dim">WEB MERCATOR / EPSG:3857</span>
       </div>
-      <canvas id="rtChart" aria-hidden="true"></canvas>
-      <p class="rt-cap">リアルタイム震度 直近3分<span id="rtNote"></span></p>
-    </div>
-    <div class="kmoni-bar">
-      <span>NIED 強震モニタ / リアルタイム震度（地表）</span>
-      <button class="ghost" id="kmoniCfg" type="button">設定<i>CONFIG</i></button>
-    </div>
-    <div class="kmoni-setup" id="kmoniSetup" hidden>
-      <p>中継プロキシのURL。空欄にすると既定のプロキシに戻ります。</p>
-      <div class="row">
-        <input id="kmoniUrl" type="url" placeholder="https://your-worker.workers.dev" spellcheck="false">
-        <button class="ghost" id="kmoniSave" type="button">保存<i>SAVE</i></button>
+      <div class="pn-body"><div id="map2d"></div></div>
+    </article>
+
+    <article class="pn" id="p3d">
+      <div class="pn-hd">
+        <span class="pn-t"><b>震源立体図</b><i>HYPOCENTER DEPTH</i></span>
+        <span class="pn-m" id="tag3d">最近の震源（地下・実スケール）</span>
+        <button class="btn mini" id="btnResetView" type="button"><b>視点</b><i>RESET</i></button>
       </div>
-    </div>
+      <div class="pn-body">
+        <div id="view3d"></div>
+        <!-- 深さの色スケール。過去震源の雲がどの深さかを読むための凡例 -->
+        <div class="depthkey" id="depthKey">
+          <span class="dk-t"><b>深さ</b><i>DEPTH</i></span>
+          <span class="dk-bar" aria-hidden="true"></span>
+          <span class="dk-l"><i>0</i><i>100</i><i>300</i><i>700km</i></span>
+          <span class="dk-n" id="depthCount">過去の震源を読み込み中…</span>
+        </div>
+      </div>
+    </article>
   </section>
 
-  <!-- 立体図 -->
-  <section class="panel" id="p3d">
-    <div class="hd">
-      <span class="lbl"><b>震源立体図</b><i>3D HYPOCENTER</i></span>
-      <span class="tag" id="tag3d">最近の震源（地下・実スケール）</span>
-      <button class="ghost mini" id="btnResetView" type="button">視点<i>RESET</i></button>
-    </div>
-    <div class="cnv">
-      <div id="view3d"></div>
-      <!-- 深さの色スケール。過去震源の雲がどの深さかを読むための凡例 -->
-      <div class="depthkey" id="depthKey">
-        <span class="dk-t"><b>深さ</b><i>DEPTH</i></span>
-        <span class="dk-bar" aria-hidden="true"></span>
-        <span class="dk-l"><i>0</i><i>100</i><i>300</i><i>700km</i></span>
-        <span class="dk-n" id="depthCount">過去の震源を読み込み中…</span>
+  <!-- 右列: 統計 / 地表の観測震度 / 観測履歴 -->
+  <section class="col col-c">
+    <article class="pn" id="pStats">
+      <div class="pn-hd"><span class="pn-t"><b>状況</b><i>STATUS</i></span><span class="pn-m" id="tagInfo">モニタリング</span></div>
+      <div class="pn-body stats">
+        <div class="stat"><span class="k">受信済み<i>RECEIVED</i></span><span class="v"><b id="statCount">0</b> 件</span></div>
+        <div class="stat"><span class="k">最大震度<i>MAX INT.</i></span><span class="v"><b id="statMax">-</b></span></div>
+        <div class="stat wide"><span class="k">最新<i>LATEST</i></span><span class="v sm" id="statLatest">—</span></div>
       </div>
-    </div>
-  </section>
+    </article>
 
-  <!-- 状態 -->
-  <section class="panel" id="pInfo">
-    <div class="hd">
-      <span class="lbl"><b>状況</b><i>STATUS</i></span>
-      <span class="tag" id="tagInfo">モニタリング</span>
-    </div>
-    <div class="body">
-      <!-- EEWモード -->
-      <div class="hypo eew-only">
-        <span class="name" id="epiName">—</span><span class="mag" id="epiMag">M --</span>
-        <span class="meta"><span>深さ <b id="epiDepth">--</b></span><span>発生 <b id="epiTime">--:--:--</b></span></span>
+    <article class="pn" id="pShindo">
+      <div class="pn-hd">
+        <span class="pn-t"><b>地表の観測震度</b><i>OBSERVED SURFACE</i></span>
+        <span class="pn-m dim">観測点数</span>
       </div>
+      <div class="pn-body" id="shindoChart"></div>
+    </article>
 
-      <div class="cd eew-only" id="cdBox">
-        <div class="cd-head">
-          <span class="cd-lead">主要動到達まで<i>S-WAVE ARRIVAL IN</i></span>
-          <span class="cd-loc"><b id="locName">東京（既定値）</b>
-            <button class="ghost mini" id="btnLoc" type="button">現在地<i>LOCATE</i></button></span>
-        </div>
-        <div class="cd-read">
-          <div class="seg7" id="cdSeg" aria-hidden="true"></div>
-          <span class="cd-unit">秒</span>
-        </div>
-        <p class="cd-live" id="cdText" role="status" aria-live="polite">S波到達まで --秒</p>
+    <article class="pn" id="pLog">
+      <div class="pn-hd">
+        <span class="pn-t"><b>観測履歴</b><i>EVENT LOG</i></span>
+        <span class="pn-m dim">気象庁発表</span>
       </div>
-
-      <div class="waves eew-only">
-        <div class="wv p" id="wvP"><span>P波 初期微動<i>P-WAVE</i></span><b>--</b></div>
-        <div class="wv s" id="wvS"><span>S波 主要動<i>S-WAVE</i></span><b>--</b></div>
-      </div>
-
-      <div class="shindo eew-only">
-        <div class="chip" id="chip"><small>予測震度</small><span id="chipNum">-</span></div>
-        <p>設定地点の予測震度。簡易走時と距離減衰式による推定値のため、<b>±数秒・±1階級程度</b>の誤差があります。</p>
-      </div>
-      <div class="legend eew-only" id="isoLegend" style="display:none">
-        予測震度域（破線）
-        <i style="background:#FAE696;color:#111">4</i>
-        <i style="background:#FFE600;color:#111">5-</i>
-        <i style="background:#FF2800;color:#fff">6-</i>
-      </div>
-
-      <!-- 平常時モード -->
-      <div class="stats mon-only">
-        <div class="stat"><div class="k">受信済み<i>RECEIVED</i></div><div class="v"><span id="statCount">0</span><small> 件</small></div></div>
-        <div class="stat"><div class="k">最大震度<i>MAX INT.</i></div><div class="v" id="statMax">-</div></div>
-        <div class="stat"><div class="k">最新<i>LATEST</i></div><div class="v small" id="statLatest">—</div></div>
-      </div>
-      <!-- 地表の観測震度（気象庁発表の地点別震度）。推定ではなく実測 -->
-      <section class="sc mon-only" id="shindoChart" aria-label="地表の観測震度の分布">
-        <div class="sc-title">
-          <span class="lbl"><b>地表の観測震度</b><i>OBSERVED SURFACE INTENSITY</i></span>
-          <span class="sc-axis">観測点数</span>
-        </div>
-      </section>
-
-      <div class="tblwrap mon-only">
+      <div class="pn-body tblwrap">
         <table>
           <thead><tr><th>時刻</th><th>震央</th><th>M</th><th>深さ</th><th>震度</th></tr></thead>
           <tbody id="quakeRows"></tbody>
         </table>
       </div>
-      <div class="legend mon-only">
-        震度
-        <i style="background:#F2F2FF;color:#111">1</i><i style="background:#00AAFF;color:#fff">2</i>
-        <i style="background:#0041FF;color:#fff">3</i><i style="background:#FAE696;color:#111">4</i>
-        <i style="background:#FFE600;color:#111">5-</i><i style="background:#FF9900;color:#111">5+</i>
-        <i style="background:#FF2800;color:#fff">6-</i><i style="background:#A50021;color:#fff">6+</i>
-        <i style="background:#B40068;color:#fff">7</i>
-      </div>
-    </div>
+    </article>
   </section>
 </main>
 
-<footer>
-  <span>DATA: P2P地震情報 / 強震モニタ(NIED) / 地図: &copy; OpenStreetMap contributors &copy; CARTO</span>
-  <span>本システムは参考情報であり、気象庁の発表する警報・情報に代替するものではありません。</span>
+<footer class="ft">
+  <span class="ft-k">DATA LINK</span>
+  <span class="ft-mq"><span class="ft-run" id="ticker">P2P地震情報 / 強震モニタ(NIED) / USGS / 地図 © OpenStreetMap contributors © CARTO</span></span>
+  <span class="ft-note">本システムは参考情報であり、気象庁の発表する警報・情報に代替するものではありません</span>
 </footer>
+
+<!-- 警報時のみ現れる。平常時の盤面を覆わないよう独立させている -->
+<div class="eew" id="eewOverlay" aria-hidden="true">
+  <div class="eew-box" role="alertdialog" aria-labelledby="eewTitle">
+    <div class="eew-hd">
+      <span class="eew-mark" aria-hidden="true"></span>
+      <b id="eewTitle">緊急地震速報</b>
+      <span class="eew-en">EARTHQUAKE EARLY WARNING</span>
+      <span class="eew-rep" id="repNo">—</span>
+    </div>
+    <div class="eew-body">
+      <div class="eew-main">
+        <div class="eew-name" id="epiName">—</div>
+        <div class="eew-figs">
+          <span><i>MAGNITUDE</i><b id="epiMag">M --</b></span>
+          <span><i>DEPTH</i><b id="epiDepth">-- km</b></span>
+          <span><i>ORIGIN</i><b id="epiTime">--:--:--</b></span>
+        </div>
+        <p class="eew-warn">強い揺れに警戒してください</p>
+        <div class="waves">
+          <span class="wv p" id="wvP"><i>P波 初期微動</i><b>--</b></span>
+          <span class="wv s" id="wvS"><i>S波 主要動</i><b>--</b></span>
+        </div>
+        <p class="eew-fine">簡易走時と距離減衰式による推定値のため、<b>±数秒・±1階級程度</b>の誤差があります。</p>
+        <div class="legend" id="isoLegend" style="display:none">
+          予測震度域（破線）
+          <i style="background:#FAE696;color:#111">4</i>
+          <i style="background:#FFE600;color:#111">5-</i>
+          <i style="background:#FF2800;color:#fff">6-</i>
+        </div>
+      </div>
+      <div class="eew-side" id="cdBox">
+        <div class="cd-loc">
+          <b id="locName">東京（既定値）</b>
+          <button class="btn mini" id="btnLoc" type="button"><b>現在地</b><i>LOCATE</i></button>
+        </div>
+        <div class="cd-lead">S波到達まで<i>S-WAVE ARRIVAL IN</i></div>
+        <div class="cd-read"><span id="cdNum">--</span><span class="cd-unit">秒</span></div>
+        <div class="cd-bar" aria-hidden="true"><span id="cdBarFill"></span></div>
+        <div class="chip" id="chip"><i>予測震度</i><b id="chipNum">-</b></div>
+        <p class="cd-live" id="cdText" role="status" aria-live="polite">S波到達まで --秒</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
