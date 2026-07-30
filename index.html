@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-GZjGSGZc.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BjSaoEIu.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-IArudwTJ.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-C1cGEBGS.css">
 </head>
 <body class="mode-mon">
 
@@ -92,19 +92,29 @@
         <span class="pn-m ok"><b id="rtCount">—</b> 解析点</span>
       </div>
       <div class="pn-body kmoni-cnv">
-        <canvas id="kmoniCanvas"></canvas>
-        <p class="cnv-note" aria-hidden="true">
-          <span id="kmoniLayerName">SURFACE SINDO / 地表のリアルタイム震度</span><br>
-          <span class="ok" id="kmoniDecodeNote">NIED 強震モニタ · 1Hz · 画像解析</span>
-        </p>
+        <!-- 2種類を同時に出す。切り替え式にすると片方が見えない間に何が起きたか分からない -->
+        <figure class="cnv" id="cnvShindo">
+          <canvas id="kmoniCanvas"></canvas>
+          <figcaption>
+            <b>リアルタイム震度</b><i>SURFACE SHINDO</i>
+            <span class="ok">画像解析で数値化</span>
+          </figcaption>
+        </figure>
+        <figure class="cnv" id="cnvAccel">
+          <canvas id="kmoniAccel"></canvas>
+          <figcaption>
+            <b>最大加速度</b><i>PGA · gal</i>
+            <span class="dim">画像のみ（色対応表なし）</span>
+          </figcaption>
+        </figure>
         <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
       </div>
       <div class="pn-foot">
-        <label class="sel inline">
-          <span class="sel-k">表示<i>LAYER</i></span>
-          <select id="selLayer"></select>
+        <label class="chk" title="最大加速度の画像を並べて表示する（切ると取得を止めます）">
+          <input type="checkbox" id="chkAccel" checked>
+          <span>最大加速度<i>PGA</i></span>
         </label>
-        <span id="kmoniNote">NIED 強震モニタ</span>
+        <span id="kmoniNote">NIED 強震モニタ · 1Hz</span>
         <button class="btn mini" id="kmoniCfg" type="button"><b>設定</b><i>CONFIG</i></button>
       </div>
       <div class="kmoni-setup" id="kmoniSetup" hidden>
