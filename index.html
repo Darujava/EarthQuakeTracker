@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-HaBY-nTS.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CqsYNvaL.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Dl_Dej-D.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CV3lNUG6.css">
 </head>
 <body class="mode-mon">
 
@@ -49,6 +49,17 @@
             title="緊急地震速報の警報音・秒読みの音を鳴らす">
       <b id="btnSoundJp">音声 切</b><i id="btnSoundEn">SOUND OFF</i>
     </button>
+    <label class="sel" title="設定地点の予測震度がこの値以上のときだけ警報画面と音を出す">
+      <span class="sel-k">警報しきい値<i>ALERT MIN.</i></span>
+      <select id="selThreshold">
+        <option value="-1">すべて</option>
+        <option value="0">震度1以上</option>
+        <option value="1">震度2以上</option>
+        <option value="2">震度3以上</option>
+        <option value="3">震度4以上</option>
+        <option value="4">震度5弱以上</option>
+      </select>
+    </label>
     <button class="btn" id="btnReplay" type="button"
             title="宮城県沖M7.3のEEW系列を再生してEEW画面をテスト">
       <b>警報テスト</b><i>DRILL</i>
@@ -104,8 +115,8 @@
     <article class="pn" id="pRegion">
       <div class="pn-hd">
         <span class="pn-t"><b>全国の観測点</b><i>NATIONWIDE</i></span>
-        <span class="pn-m dim">推移は各点で自動縮尺</span>
-        <span class="pn-m">直近3分 · 1Hz</span>
+        <span class="pn-m dim">各行 自動縮尺 / 破線＝震度0</span>
+        <span class="pn-m">最大3分 · 1Hz</span>
       </div>
       <div class="pn-body region">
         <canvas id="rtChart" aria-hidden="true"></canvas>
