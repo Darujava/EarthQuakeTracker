@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Dl_Dej-D.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CV3lNUG6.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-GZjGSGZc.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BjSaoEIu.css">
 </head>
 <body class="mode-mon">
 
@@ -94,13 +94,17 @@
       <div class="pn-body kmoni-cnv">
         <canvas id="kmoniCanvas"></canvas>
         <p class="cnv-note" aria-hidden="true">
-          SURFACE SINDO / 地表のリアルタイム震度<br>
-          <span class="ok">NIED 強震モニタ · 1Hz · 画像解析</span>
+          <span id="kmoniLayerName">SURFACE SINDO / 地表のリアルタイム震度</span><br>
+          <span class="ok" id="kmoniDecodeNote">NIED 強震モニタ · 1Hz · 画像解析</span>
         </p>
         <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
       </div>
       <div class="pn-foot">
-        <span>NIED 強震モニタ / リアルタイム震度（地表）</span>
+        <label class="sel inline">
+          <span class="sel-k">表示<i>LAYER</i></span>
+          <select id="selLayer"></select>
+        </label>
+        <span id="kmoniNote">NIED 強震モニタ</span>
         <button class="btn mini" id="kmoniCfg" type="button"><b>設定</b><i>CONFIG</i></button>
       </div>
       <div class="kmoni-setup" id="kmoniSetup" hidden>
