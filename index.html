@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-DO6is9lr.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DpFn_iMN.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-3lI8BuU-.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DxNaW12r.css">
 </head>
 <body class="mode-mon">
 
@@ -118,6 +118,12 @@
           <input id="kmoniUrl" type="url" placeholder="https://your-worker.workers.dev" spellcheck="false">
           <button class="btn mini" id="kmoniSave" type="button"><b>保存</b><i>SAVE</i></button>
         </div>
+        <!-- 止まったときに何が起きていたかを残す。原因を推測ではなく記録で特定するため -->
+        <div class="row diag-row">
+          <span>受信の記録（直近200件）</span>
+          <button class="btn mini" id="kmoniLogCopy" type="button"><b>コピー</b><i>COPY</i></button>
+        </div>
+        <pre class="diag-log" id="kmoniLog" aria-label="強震モニタ受信ログ"></pre>
       </div>
     </article>
 
