@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BM9lplDo.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DtesEkjx.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-EyenyZyC.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DpFn_iMN.css">
 </head>
 <body class="mode-mon">
 
@@ -78,7 +78,6 @@
     <div class="rail-cell" id="railGnss" data-state="wait"><b>測位</b><i>GNSS</i><em id="railGnssV">—</em></div>
     <div class="rail-cell rail-mode" id="railMode" data-state="ok"><b>系統</b><i>MODE</i><em id="railModeV">監視</em></div>
     <span class="rail-fill" aria-hidden="true"></span>
-    <span class="rail-tag">第三観測系統</span>
   </aside>
 
   <!-- 左列: 各地の揺れ / リアルタイム震度の推移 -->
@@ -92,20 +91,16 @@
         <span class="pn-m ok"><b id="rtCount">—</b> 解析点</span>
       </div>
       <div class="pn-body kmoni-cnv">
-        <!-- 2種類を同時に出す。切り替え式にすると片方が見えない間に何が起きたか分からない -->
+        <!-- 2種類を同時に出す。切り替え式にすると片方が見えない間に何が起きたか分からない。
+             見出しは画像の外に置く: NIEDの画像には見出しと時刻が焼き込まれているので、
+             重ねると必ず文字が重なる。 -->
         <figure class="cnv" id="cnvShindo">
-          <canvas id="kmoniCanvas"></canvas>
-          <figcaption>
-            <b>リアルタイム震度</b><i>SURFACE SHINDO</i>
-            <span class="ok">画像解析で数値化</span>
-          </figcaption>
+          <figcaption><b>リアルタイム震度</b><span class="note ok">画像解析で数値化</span></figcaption>
+          <div class="cnv-img" id="imgShindo"><canvas id="kmoniCanvas"></canvas></div>
         </figure>
         <figure class="cnv" id="cnvAccel">
-          <canvas id="kmoniAccel"></canvas>
-          <figcaption>
-            <b>最大加速度</b><i>PGA · gal</i>
-            <span class="dim accel-note">画像のみ（色対応表なし）</span>
-          </figcaption>
+          <figcaption><b>最大加速度</b><span class="note dim accel-note">画像のみ（色対応表なし）</span></figcaption>
+          <div class="cnv-img" id="imgAccel"><canvas id="kmoniAccel"></canvas></div>
         </figure>
         <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
       </div>
@@ -133,7 +128,6 @@
         <span class="pn-m">最大3分 · 1Hz</span>
       </div>
       <div class="pn-body region">
-        <canvas id="rtChart" aria-hidden="true"></canvas>
         <div class="rt-reads">
           <span class="rt-cell"><b>最寄り<i>NEAREST</i></b><em id="rtNearName">—</em><span class="rt-v" id="rtNearV">—</span></span>
           <span class="rt-cell"><b>全国最大<i>PEAK</i></b><em id="rtMaxName">—</em><span class="rt-v" id="rtMaxV">—</span></span>
