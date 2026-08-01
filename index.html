@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Cxrxjs1y.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-D8h_AQZ1.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-oihg03N1.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BVfRoDKW.css">
 </head>
 <body class="mode-mon">
 
@@ -197,6 +197,17 @@
             <tbody id="quakeRows"></tbody>
           </table>
         </div>
+      </div>
+    </article>
+
+    <!-- いま起きていることを1行ずつ流す。行の中身はすべて実測で、架空の行は出さない -->
+    <article class="pn" id="pSysLog">
+      <div class="pn-hd">
+        <span class="pn-t"><b>系統ログ</b><i>SYSTEM LOG</i></span>
+        <span class="pn-m dim">実測のみ</span>
+      </div>
+      <div class="pn-body">
+        <div class="slog" id="sysLog" role="log" aria-live="off" aria-label="系統ログ"></div>
       </div>
     </article>
   </section>
