@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CSkhD9-u.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BVfRoDKW.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-LeY-hEmv.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-B2tkCqNl.css">
 </head>
 <body class="mode-mon">
 
@@ -72,13 +72,6 @@
 
 <main class="board">
   <!-- 系統状態: 実際の接続・受信状態だけを出す（架空の指標は置かない） -->
-  <aside class="rail" aria-label="系統状態">
-    <div class="rail-cell" id="railLink" data-state="wait"><b>通信</b><i>LINK</i><em id="railLinkV">—</em></div>
-    <div class="rail-cell" id="railObsv" data-state="wait"><b>観測</b><i>OBSV</i><em id="railObsvV">—</em></div>
-    <div class="rail-cell" id="railGnss" data-state="wait"><b>測位</b><i>GNSS</i><em id="railGnssV">—</em></div>
-    <div class="rail-cell rail-mode" id="railMode" data-state="ok"><b>系統</b><i>MODE</i><em id="railModeV">監視</em></div>
-    <span class="rail-fill" aria-hidden="true"></span>
-  </aside>
 
   <!-- 左列: 各地の揺れ / リアルタイム震度の推移 -->
   <section class="col col-a">
@@ -178,6 +171,15 @@
     <article class="pn" id="pStats">
       <div class="pn-hd"><span class="pn-t"><b>状況</b><i>STATUS</i></span><span class="pn-m" id="tagInfo">モニタリング</span></div>
       <div class="pn-body stats">
+        <!-- 系統状態。左の縦レールから移した。
+             縦に細長い帯だと1つあたり56px幅しか無く、値が「取得中」で切れていた。
+             状況パネルの中なら「システムの状態」としての置き場所としても素直 -->
+        <div class="tele" aria-label="系統状態">
+          <div class="tele-c" id="railLink" data-state="wait"><b>通信</b><i>LINK</i><em id="railLinkV">—</em></div>
+          <div class="tele-c" id="railObsv" data-state="wait"><b>観測</b><i>OBSV</i><em id="railObsvV">—</em></div>
+          <div class="tele-c" id="railGnss" data-state="wait"><b>測位</b><i>GNSS</i><em id="railGnssV">—</em></div>
+          <div class="tele-c tele-mode" id="railMode" data-state="ok"><b>系統</b><i>MODE</i><em id="railModeV">監視</em></div>
+        </div>
         <div class="stat"><span class="k">受信済み<i>RECEIVED</i></span><span class="v"><b id="statCount">0</b> 件</span></div>
         <div class="stat"><span class="k">最大震度<i>MAX INT.</i></span><span class="v"><b id="statMax">-</b></span></div>
         <div class="stat wide"><span class="k">最新<i>LATEST</i></span><span class="v sm" id="statLatest">—</span></div>
@@ -226,15 +228,21 @@
       <span class="eew-mark" aria-hidden="true"></span>
       <b id="eewTitle">緊急地震速報</b>
       <span class="eew-en">EARTHQUAKE EARLY WARNING</span>
-      <span class="eew-rep" id="repNo">—</span>
+      <span class="eew-src" id="eewSrc">—</span>
     </div>
     <div class="eew-body">
       <div class="eew-main">
-        <div class="eew-name" id="epiName">—</div>
+        <!-- 強震モニタの帯と同じ並び: 発生時刻・報数・震源地名 → M・深さ・最大予測震度 -->
+        <div class="eew-band">
+          <span class="eb-t" id="epiTime">--:--:--</span>
+          <span class="eb-r" id="repNo">—</span>
+          <span class="eb-n" id="epiName">—</span>
+        </div>
         <div class="eew-figs">
           <span><i>MAGNITUDE</i><b id="epiMag">M --</b></span>
           <span><i>DEPTH</i><b id="epiDepth">-- km</b></span>
-          <span><i>ORIGIN</i><b id="epiTime">--:--:--</b></span>
+          <!-- 全国の最大予測震度。右側の「予測震度」は設定地点の推定値で、別物 -->
+          <span><i>最大予測震度</i><b id="epiMaxInt">—</b></span>
         </div>
         <p class="eew-warn">強い揺れに警戒してください</p>
         <div class="waves">
