@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='3' y='3' width='10' height='10' transform='rotate(45 8 8)' fill='none' stroke='%23ff8c1a' stroke-width='1.6'/><circle cx='8' cy='8' r='1.8' fill='%23ff8c1a'/></svg>">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Do6UFH_4.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CI4THIGM.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-DYiqEhHx.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-PFP05Y6a.css">
 </head>
 <body class="mode-mon">
 
@@ -161,7 +161,13 @@
         <span class="pn-m" id="tag2d">最近の震央</span>
         <span class="pn-m dim">WEB MERCATOR / EPSG:3857</span>
       </div>
-      <div class="pn-body"><div id="map2d"></div></div>
+      <div class="pn-body">
+        <div id="map2d"></div>
+        <!-- 選択中だけ現れる。震度の印を「どの粒度で」置いているかを明示する。
+             気象庁の観測点は市区町村単位だが、その緯度経度は無料の経路では
+             取れないので、県まで粗くして代表点に置いている -->
+        <div class="selnote" id="selNote" hidden></div>
+      </div>
     </article>
 
   </section>
@@ -183,6 +189,23 @@
         <div class="stat"><span class="k">受信済み<i>RECEIVED</i></span><span class="v"><b id="statCount">0</b> 件</span></div>
         <div class="stat"><span class="k">最大震度<i>MAX INT.</i></span><span class="v"><b id="statMax">-</b></span></div>
         <div class="stat wide"><span class="k">最新<i>LATEST</i></span><span class="v sm" id="statLatest">—</span></div>
+        <!-- 警報板は90秒で引っ込み、系統ログは約50秒で流れて消える。
+             速報を受け取ったという事実がどこにも残らないので、ここに残す。
+             次の報が来るまで消さない -->
+        <div class="stat wide eewl" id="statEew" data-has="0">
+          <span class="k">最終速報<i>LAST EEW</i></span>
+          <div class="eewl-b">
+            <span class="eewl-t" id="eewlTime">--:--:--</span>
+            <span class="eewl-r" id="eewlRep">—</span>
+            <span class="eewl-n" id="eewlName">受信なし</span>
+          </div>
+          <div class="eewl-f">
+            <span><i>M</i><b id="eewlMag">—</b></span>
+            <span><i>深さ</i><b id="eewlDepth">—</b></span>
+            <span><i>最大予測震度</i><b id="eewlInt">—</b></span>
+            <span class="eewl-s" id="eewlSrc">—</span>
+          </div>
+        </div>
       </div>
     </article>
 
