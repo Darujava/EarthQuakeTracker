@@ -14,8 +14,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-DYiqEhHx.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-PFP05Y6a.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BRM7MCy-.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CYrSAJoo.css">
 </head>
 <body class="mode-mon">
 
@@ -51,7 +51,7 @@
 
   <div class="hd-btns">
     <button class="btn" id="btnSound" type="button" aria-pressed="false"
-            title="緊急地震速報の警報音・秒読みの音を鳴らす">
+            title="音を鳴らす大元の入切。緊急地震速報の警報音・秒読みと、揺れ検知音はここが「入」のときだけ鳴る">
       <b id="btnSoundJp">音声 切</b><i id="btnSoundEn">SOUND OFF</i>
     </button>
     <label class="sel" title="設定地点の予測震度がこの値以上のときだけ警報画面と音を出す">
@@ -65,7 +65,21 @@
         <option value="4">震度5弱以上</option>
       </select>
     </label>
-    <button class="btn" id="btnReplay" type="button"
+    <!-- 速報を待たずに、実際に観測された揺れで鳴らす合図。
+         警報（予測）とは別物なので、しきい値も音も分けてある -->
+    <label class="sel" title="全国の観測点で実際に観測された揺れがこの値以上になったら短い音（ピッピ）で知らせる。速報ではなく観測なので、鳴る時点で揺れは始まっています">
+      <span class="sel-k">検知音<i>DETECT</i></span>
+      <select id="selDetect">
+        <option value="-1">切</option>
+        <option value="0">震度1以上</option>
+        <option value="1">震度2以上</option>
+        <option value="2">震度3以上</option>
+        <option value="3">震度4以上</option>
+        <option value="4">震度5弱以上</option>
+      </select>
+    </label>
+    <!-- 常用しない操作なので、盤面の他のボタンより一段小さく置く -->
+    <button class="btn mini" id="btnReplay" type="button"
             title="宮城県沖M7.3のEEW系列を再生してEEW画面をテスト">
       <b>警報テスト</b><i>DRILL</i>
     </button>
