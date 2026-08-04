@@ -14,8 +14,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-C5a7Npd1.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CYrSAJoo.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CtI3D7Wj.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-FvAeDWVv.css">
 </head>
 <body class="mode-mon">
 
@@ -142,8 +142,13 @@
     <article class="pn" id="pRegion">
       <div class="pn-hd">
         <span class="pn-t"><b>全国の観測点</b><i>NATIONWIDE</i></span>
-        <span class="pn-m dim">全行 共通目盛り −3〜5 / 破線＝震度0</span>
-        <span class="pn-m">最大3分 · 1Hz</span>
+        <!-- 縦の目盛り。行に使える高さは22px前後しかないので、
+             どこを拡大するかを選べるようにしてある。選んだ範囲は常に見えている -->
+        <label class="pn-sel" title="縦の目盛り。全行に同じ目盛りが効く。破線は震度0の位置。上端を超えた値は上端で止まり、行の上辺に頭打ちの印が出る">
+          <span>目盛り</span>
+          <select id="selScale"></select>
+        </label>
+        <span class="pn-m dim">最大3分 · 1Hz</span>
       </div>
       <div class="pn-body region">
         <div class="rt-reads">
