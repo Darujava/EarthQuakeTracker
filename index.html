@@ -14,8 +14,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CtI3D7Wj.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-FvAeDWVv.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-C9n99FS6.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DiJWRute.css">
 </head>
 <body class="mode-mon">
 
@@ -114,12 +114,22 @@
           <figcaption><b>最大加速度</b><span class="note dim accel-note">画像のみ（色対応表なし）</span></figcaption>
           <div class="cnv-img" id="imgAccel"><canvas id="kmoniAccel"></canvas></div>
         </figure>
+        <!-- 長周期地震動モニタ（別ホスト）。画像の作りは同じだが、
+             色→値の対応表は別物なので数値化はしない -->
+        <figure class="cnv" id="cnvLp" hidden>
+          <figcaption><b>長周期地震動</b><span class="note dim">画像のみ（色対応表なし）</span></figcaption>
+          <div class="cnv-img" id="imgLp"><canvas id="kmoniLp"></canvas></div>
+        </figure>
         <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
       </div>
       <div class="pn-foot">
         <label class="chk" title="最大加速度の画像を並べて表示する（切ると取得を止めます）">
           <input type="checkbox" id="chkAccel" checked>
           <span>最大加速度<i>PGA</i></span>
+        </label>
+        <label class="chk" title="長周期地震動モニタ（絶対速度応答）を並べて表示する。別ホストだが束にまとめて取るので要求数は増えません">
+          <input type="checkbox" id="chkLp">
+          <span>長周期<i>LPGM</i></span>
         </label>
         <span id="kmoniNote">NIED 強震モニタ · 1Hz</span>
         <button class="btn mini" id="kmoniCfg" type="button"><b>設定</b><i>CONFIG</i></button>
@@ -245,6 +255,91 @@
             <thead><tr><th>時刻</th><th>震央</th><th>M</th><th>深さ</th><th>震度</th></tr></thead>
             <tbody id="quakeRows"></tbody>
           </table>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- 右端: 計器と統計。数字を細かく出す列（地図やグラフはここに置かない） -->
+  <section class="col col-d">
+    <!-- 観測・通信の実測値。それらしい指標は作らず、測れた値だけを出す。
+         系統ログには流れて消える数字を、ここでは常設の計器として据える -->
+    <article class="pn" id="pTele">
+      <div class="pn-hd">
+        <span class="pn-t"><b>系統計器</b><i>TELEMETRY</i></span>
+        <span class="pn-m dim">実測のみ</span>
+      </div>
+      <div class="pn-body tele-grid">
+        <div class="tm" title="画像から実際に読み取れた観測点の数。全1,628点のうち何点が読めたか">
+          <span class="tm-k">解析点<i>DECODED</i></span>
+          <span class="tm-v"><b id="tmDecoded">—</b><em>/ <span id="tmTotal">—</span></em></span>
+        </div>
+        <div class="tm" title="読み取れなかった観測点の割合。NIEDの画像に描かれていない点も含む">
+          <span class="tm-k">欠測<i>MISSING</i></span>
+          <span class="tm-v"><b id="tmMiss">—</b></span>
+        </div>
+        <div class="tm" title="要求を出してから本体を読み終えるまで。遅延のうちこちら側の取り分">
+          <span class="tm-k">往復<i>ROUND TRIP</i></span>
+          <span class="tm-v"><b id="tmRt">—</b></span>
+        </div>
+        <div class="tm" title="配信元(NIED)が画像を作り終えるまでの遅れ。ここが大きいならアプリ側でできることは無い">
+          <span class="tm-k">配信元<i>SOURCE</i></span>
+          <span class="tm-v"><b id="tmSrc">—</b></span>
+        </div>
+        <div class="tm" title="画面に出ているコマの古さ。往復＋配信元のおおよその合計">
+          <span class="tm-k">総遅延<i>TOTAL LAG</i></span>
+          <span class="tm-v"><b id="tmLag">—</b></span>
+        </div>
+        <div class="tm" title="直近1分に実際に出した要求の数（推定ではなく実測）">
+          <span class="tm-k">要求/分<i>REQ/MIN</i></span>
+          <span class="tm-v"><b id="tmReq">—</b></span>
+        </div>
+        <div class="tm" title="直近1分の失敗数（時間切れ・エラー）">
+          <span class="tm-k">失敗/分<i>FAILED</i></span>
+          <span class="tm-v"><b id="tmFail">—</b></span>
+        </div>
+        <div class="tm" title="Cloudflare無料枠（1日10万要求 = 69.4要求/分）に対する今の割合">
+          <span class="tm-k">無料枠<i>QUOTA</i></span>
+          <span class="tm-v"><b id="tmQuota">—</b></span>
+        </div>
+        <div class="tm wide" title="1回の応答に含まれていた層。返ってこなかった層は暗く出る">
+          <span class="tm-k">応答の層<i>LAYERS</i></span>
+          <span class="tm-layers" id="tmLayers"></span>
+        </div>
+        <div class="tm wide" title="画像を中継しているプロキシ">
+          <span class="tm-k">中継<i>RELAY</i></span>
+          <span class="tm-v sm" id="tmProxy">—</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 受信した地震の統計。数えられるのは受信した範囲だけなので、その範囲も出す -->
+    <article class="pn" id="pStats2">
+      <div class="pn-hd">
+        <span class="pn-t"><b>地震活動</b><i>ACTIVITY</i></span>
+        <span class="pn-m dim">受信した範囲で集計</span>
+      </div>
+      <div class="pn-body act">
+        <div class="act-nums">
+          <div class="an"><span class="an-k">24時間<i>24H</i></span><b id="st24">0</b></div>
+          <div class="an"><span class="an-k">7日<i>7D</i></span><b id="st7d">0</b></div>
+          <div class="an"><span class="an-k">受信<i>TOTAL</i></span><b id="stTotal">0</b></div>
+          <div class="an"><span class="an-k">最大M<i>MAX MAG</i></span><b id="stMag">—</b></div>
+        </div>
+        <p class="act-range" id="stRange">まだ地震情報を受信していません</p>
+        <div class="act-sec">
+          <span class="act-t">最大震度の分布<i>BY INTENSITY</i></span>
+          <div class="sb-bars" id="stClass"></div>
+          <span class="act-note" id="stUnknown"></span>
+        </div>
+        <div class="act-sec">
+          <span class="act-t">深さの分布<i>BY DEPTH</i></span>
+          <div class="sd-rows" id="stDepth"></div>
+        </div>
+        <div class="act-sec">
+          <span class="act-t">震央地名<i>BY REGION</i></span>
+          <div class="sr-rows" id="stRegion"></div>
         </div>
       </div>
     </article>
