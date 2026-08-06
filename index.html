@@ -14,8 +14,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Drs7PO9V.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-E_BMz6p4.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CpsuetPy.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-i93hILgg.css">
 </head>
 <body class="mode-mon">
 
@@ -87,8 +87,8 @@
 <main class="board">
   <!-- 系統状態: 実際の接続・受信状態だけを出す（架空の指標は置かない） -->
 
-  <!-- 左列: 各地の揺れ / リアルタイム震度の推移 -->
-  <section class="col col-a">
+  <!-- 上の帯: 強震モニタの画像。盤面の幅いっぱいまで使って大きく出す -->
+  <section class="col col-mon">
     <article class="pn" id="pKmoni">
       <div class="pn-hd">
         <span class="pn-t"><b>各地の揺れ</b><i>REALTIME INTENSITY</i></span>
@@ -144,6 +144,10 @@
       </div>
     </article>
 
+  </section>
+
+  <!-- 左下: リアルタイム震度の推移 -->
+  <section class="col col-a">
     <article class="pn" id="pRegion">
       <div class="pn-hd">
         <span class="pn-t"><b>全国の観測点</b><i>NATIONWIDE</i></span>
@@ -165,44 +169,59 @@
     </article>
   </section>
 
-  <!-- 中央列: 震源立体図（主役なので大きく） / 震央分布 -->
-  <section class="col col-b">
-    <article class="pn" id="p3d">
-      <div class="pn-hd">
-        <span class="pn-t"><b>震源立体図</b><i>HYPOCENTER DEPTH</i></span>
-        <span class="pn-m" id="tag3d">最近の震源（地下・実スケール）</span>
-        <button class="btn mini" id="btnResetView" type="button"><b>視点</b><i>RESET</i></button>
-      </div>
-      <div class="pn-body">
-        <div id="view3d"></div>
-        <!-- 深さの色スケール。過去震源の雲がどの深さかを読むための凡例 -->
-        <div class="depthkey" id="depthKey">
-          <span class="dk-t"><b>深さ</b><i>DEPTH</i></span>
-          <span class="dk-bar" aria-hidden="true"></span>
-          <span class="dk-l"><i>0</i><i>100</i><i>300</i><i>700km</i></span>
-          <span class="dk-n" id="depthCount">過去の震源を読み込み中…</span>
-        </div>
-      </div>
-    </article>
-    <article class="pn" id="pMap">
-      <div class="pn-hd">
-        <span class="pn-t"><b>震央分布</b><i>EPICENTER MAP</i></span>
-        <span class="pn-m" id="tag2d">最近の震央</span>
-        <span class="pn-m dim">WEB MERCATOR / EPSG:3857</span>
-      </div>
-      <div class="pn-body">
-        <div id="map2d"></div>
-        <!-- 選択中だけ現れる。震度の印を「どの粒度で」置いているかを明示する。
-             気象庁の観測点は市区町村単位だが、その緯度経度は無料の経路では
-             取れないので、県まで粗くして代表点に置いている -->
-        <div class="selnote" id="selNote" hidden></div>
-      </div>
-    </article>
-
-  </section>
 
   <!-- 右列: 統計 / 地表の観測震度 / 観測履歴 -->
   <section class="col col-c">
+    <article class="pn" id="pQuake">
+      <div class="pn-hd">
+        <span class="pn-t"><b>地震情報</b><i>EVENT LOG</i></span>
+        <span class="pn-m dim">気象庁発表</span>
+      </div>
+      <div class="pn-body quakebox">
+        <div class="sc" id="shindoChart"></div>
+        <div class="tblwrap">
+          <table>
+            <thead><tr><th>時刻</th><th>震央</th><th>M</th><th>深さ</th><th>震度</th></tr></thead>
+            <tbody id="quakeRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <article class="pn" id="pStats2">
+      <div class="pn-hd">
+        <span class="pn-t"><b>地震活動</b><i>ACTIVITY</i></span>
+        <span class="pn-m dim">受信した範囲で集計</span>
+      </div>
+      <div class="pn-body act">
+        <div class="act-nums">
+          <div class="an"><span class="an-k">24時間<i>24H</i></span><b id="st24">0</b></div>
+          <div class="an"><span class="an-k">7日<i>7D</i></span><b id="st7d">0</b></div>
+          <div class="an"><span class="an-k">受信<i>TOTAL</i></span><b id="stTotal">0</b></div>
+          <div class="an"><span class="an-k">最大M<i>MAX MAG</i></span><b id="stMag">—</b></div>
+        </div>
+        <p class="act-range" id="stRange">まだ地震情報を受信していません</p>
+        <div class="act-sec">
+          <span class="act-t">最大震度の分布<i>BY INTENSITY</i></span>
+          <div class="sb-bars" id="stClass"></div>
+          <span class="act-note" id="stUnknown"></span>
+        </div>
+        <div class="act-sec">
+          <span class="act-t">深さの分布<i>BY DEPTH</i></span>
+          <div class="sd-rows" id="stDepth"></div>
+        </div>
+        <div class="act-sec">
+          <span class="act-t">震央地名<i>BY REGION</i></span>
+          <div class="sr-rows" id="stRegion"></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 右端: 計器とログ。数字を細かく出す列（地図やグラフはここに置かない） -->
+  <section class="col col-d">
+    <!-- 観測・通信の実測値。それらしい指標は作らず、測れた値だけを出す。
+         系統ログには流れて消える数字を、ここでは常設の計器として据える -->
     <article class="pn" id="pStats">
       <div class="pn-hd"><span class="pn-t"><b>状況</b><i>STATUS</i></span><span class="pn-m" id="tagInfo">モニタリング</span></div>
       <div class="pn-body stats">
@@ -238,28 +257,6 @@
       </div>
     </article>
 
-    <article class="pn" id="pQuake">
-      <div class="pn-hd">
-        <span class="pn-t"><b>地震情報</b><i>EVENT LOG</i></span>
-        <span class="pn-m dim">気象庁発表</span>
-      </div>
-      <div class="pn-body quakebox">
-        <div class="sc" id="shindoChart"></div>
-        <div class="tblwrap">
-          <table>
-            <thead><tr><th>時刻</th><th>震央</th><th>M</th><th>深さ</th><th>震度</th></tr></thead>
-            <tbody id="quakeRows"></tbody>
-          </table>
-        </div>
-      </div>
-    </article>
-
-  </section>
-
-  <!-- 右端: 計器と統計。数字を細かく出す列（地図やグラフはここに置かない） -->
-  <section class="col col-d">
-    <!-- 観測・通信の実測値。それらしい指標は作らず、測れた値だけを出す。
-         系統ログには流れて消える数字を、ここでは常設の計器として据える -->
     <article class="pn" id="pTele">
       <div class="pn-hd">
         <span class="pn-t"><b>系統計器</b><i>TELEMETRY</i></span>
@@ -310,35 +307,6 @@
     </article>
 
     <!-- 受信した地震の統計。数えられるのは受信した範囲だけなので、その範囲も出す -->
-    <article class="pn" id="pStats2">
-      <div class="pn-hd">
-        <span class="pn-t"><b>地震活動</b><i>ACTIVITY</i></span>
-        <span class="pn-m dim">受信した範囲で集計</span>
-      </div>
-      <div class="pn-body act">
-        <div class="act-nums">
-          <div class="an"><span class="an-k">24時間<i>24H</i></span><b id="st24">0</b></div>
-          <div class="an"><span class="an-k">7日<i>7D</i></span><b id="st7d">0</b></div>
-          <div class="an"><span class="an-k">受信<i>TOTAL</i></span><b id="stTotal">0</b></div>
-          <div class="an"><span class="an-k">最大M<i>MAX MAG</i></span><b id="stMag">—</b></div>
-        </div>
-        <p class="act-range" id="stRange">まだ地震情報を受信していません</p>
-        <div class="act-sec">
-          <span class="act-t">最大震度の分布<i>BY INTENSITY</i></span>
-          <div class="sb-bars" id="stClass"></div>
-          <span class="act-note" id="stUnknown"></span>
-        </div>
-        <div class="act-sec">
-          <span class="act-t">深さの分布<i>BY DEPTH</i></span>
-          <div class="sd-rows" id="stDepth"></div>
-        </div>
-        <div class="act-sec">
-          <span class="act-t">震央地名<i>BY REGION</i></span>
-          <div class="sr-rows" id="stRegion"></div>
-        </div>
-      </div>
-    </article>
-
     <!-- いま起きていることを1行ずつ流す。行の中身はすべて実測で、架空の行は出さない -->
     <article class="pn" id="pSysLog">
       <div class="pn-hd">
@@ -349,6 +317,43 @@
         <div class="slog" id="sysLog" role="log" aria-live="off" aria-label="系統ログ"></div>
       </div>
     </article>
+  </section>
+
+  <!-- 右列: 2つの地図をまとめて右端に置く。立体図と平面図は同じ震源を別の見方で
+       示すもので、離して置くと視線が盤面を横断することになる -->
+  <section class="col col-map">
+    <article class="pn" id="p3d">
+      <div class="pn-hd">
+        <span class="pn-t"><b>震源立体図</b><i>HYPOCENTER DEPTH</i></span>
+        <span class="pn-m" id="tag3d">最近の震源（地下・実スケール）</span>
+        <button class="btn mini" id="btnResetView" type="button"><b>視点</b><i>RESET</i></button>
+      </div>
+      <div class="pn-body">
+        <div id="view3d"></div>
+        <!-- 深さの色スケール。過去震源の雲がどの深さかを読むための凡例 -->
+        <div class="depthkey" id="depthKey">
+          <span class="dk-t"><b>深さ</b><i>DEPTH</i></span>
+          <span class="dk-bar" aria-hidden="true"></span>
+          <span class="dk-l"><i>0</i><i>100</i><i>300</i><i>700km</i></span>
+          <span class="dk-n" id="depthCount">過去の震源を読み込み中…</span>
+        </div>
+      </div>
+    </article>
+    <article class="pn" id="pMap">
+      <div class="pn-hd">
+        <span class="pn-t"><b>震央分布</b><i>EPICENTER MAP</i></span>
+        <span class="pn-m" id="tag2d">最近の震央</span>
+        <span class="pn-m dim">WEB MERCATOR / EPSG:3857</span>
+      </div>
+      <div class="pn-body">
+        <div id="map2d"></div>
+        <!-- 選択中だけ現れる。震度の印を「どの粒度で」置いているかを明示する。
+             気象庁の観測点は市区町村単位だが、その緯度経度は無料の経路では
+             取れないので、県まで粗くして代表点に置いている -->
+        <div class="selnote" id="selNote" hidden></div>
+      </div>
+    </article>
+
   </section>
 </main>
 
