@@ -14,8 +14,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BSyy08_f.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BFSzwxpM.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Drs7PO9V.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-E_BMz6p4.css">
 </head>
 <body class="mode-mon">
 
@@ -78,11 +78,6 @@
         <option value="4">震度5弱以上</option>
       </select>
     </label>
-    <!-- 常用しない操作なので、盤面の他のボタンより一段小さく置く -->
-    <button class="btn mini" id="btnReplay" type="button"
-            title="宮城県沖M7.3のEEW系列を再生してEEW画面をテスト">
-      <b>警報テスト</b><i>DRILL</i>
-    </button>
   </div>
 </header>
 
@@ -117,7 +112,7 @@
         <!-- 長周期地震動モニタ（別ホスト）。画像の作りは同じだが、
              色→値の対応表は別物なので数値化はしない -->
         <figure class="cnv" id="cnvLp" hidden>
-          <figcaption><b>長周期地震動</b><span class="note dim">画像のみ（色対応表なし）</span></figcaption>
+          <figcaption><b>長周期地震動</b><span class="note dim lp-note">画像のみ（色対応表なし）</span></figcaption>
           <div class="cnv-img" id="imgLp"><canvas id="kmoniLp"></canvas></div>
         </figure>
         <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
