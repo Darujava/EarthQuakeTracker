@@ -14,8 +14,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-D2AfPweV.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-zUY_7TJV.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-C6tnZbfM.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CT0Tp0wB.css">
 </head>
 <body class="mode-mon">
 
@@ -327,9 +327,15 @@
         <span class="pn-t"><b>震源立体図</b><i>HYPOCENTER DEPTH</i></span>
         <span class="pn-m" id="tag3d">最近の震源（地下・実スケール）</span>
         <button class="btn mini" id="btnResetView" type="button"><b>視点</b><i>RESET</i></button>
+        <!-- 立体図だけを画面いっぱいに出す。震源の深さを見るには視野が要る -->
+        <button class="btn mini" id="btn3dMax" type="button" aria-pressed="false"
+                title="震源立体図だけを画面いっぱいに表示する（Esc で戻る）">
+          <b>全画面</b><i>EXPAND</i>
+        </button>
       </div>
       <div class="pn-body">
         <div id="view3d"></div>
+        <p class="max-hint">Esc または「全画面」で戻る</p>
         <!-- 深さの色スケール。過去震源の雲がどの深さかを読むための凡例 -->
         <div class="depthkey" id="depthKey">
           <span class="dk-t"><b>深さ</b><i>DEPTH</i></span>
