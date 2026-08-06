@@ -14,8 +14,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-C6tnZbfM.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CT0Tp0wB.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-B3Mk9Yka.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-B2pMOKJx.css">
 </head>
 <body class="mode-mon">
 
@@ -336,6 +336,34 @@
       <div class="pn-body">
         <div id="view3d"></div>
         <p class="max-hint">Esc または「全画面」で戻る</p>
+        <!-- 全画面のときだけ出す解析用の計器。出す値はすべて実測で、作った指標は置かない -->
+        <div class="d3-hud" id="d3Hud" aria-hidden="true">
+          <div class="hud-card hud-cam">
+            <span class="hud-t">視点<i>CAMERA</i></span>
+            <div class="hud-rows">
+              <span><i>上が指す方位</i><b id="hudBearing">—</b></span>
+              <span><i>傾き</i><b id="hudPitch">—</b></span>
+              <span><i>縮尺</i><b id="hudZoom">—</b></span>
+              <span><i>画面中心</i><b id="hudCenter">—</b></span>
+            </div>
+          </div>
+          <div class="hud-card hud-depth">
+            <span class="hud-t">深さの分布<i>BY DEPTH</i></span>
+            <div class="hud-bars" id="hudDepth"></div>
+            <span class="hud-n" id="hudCounts">—</span>
+          </div>
+          <div class="hud-card hud-sel" id="hudSel" hidden>
+            <span class="hud-t">選択中<i>SELECTED</i></span>
+            <b class="hud-name" id="hudSelName">—</b>
+            <div class="hud-rows">
+              <span><i>発生</i><b id="hudSelTime">—</b></span>
+              <span><i>M</i><b id="hudSelMag">—</b></span>
+              <span><i>深さ</i><b id="hudSelDepth">—</b></span>
+              <span><i>最大震度</i><b id="hudSelInt">—</b></span>
+              <span><i>震央</i><b id="hudSelPos">—</b></span>
+            </div>
+          </div>
+        </div>
         <!-- 深さの色スケール。過去震源の雲がどの深さかを読むための凡例 -->
         <div class="depthkey" id="depthKey">
           <span class="dk-t"><b>深さ</b><i>DEPTH</i></span>
