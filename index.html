@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>EarthQuakeTracker</title>
+  <title>DARU-net — 地震観測網</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
@@ -14,8 +14,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Bd7faFg6.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-4yxJQUIx.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CEBsBAm6.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DxzECHyw.css">
 </head>
 <body class="mode-mon">
 
@@ -28,8 +28,8 @@
   <div class="brand">
     <span class="brand-mark" aria-hidden="true"></span>
     <span class="brand-t">
-      <b>地震観測システム</b>
-      <i>SEISMIC OPERATIONS CENTER</i>
+      <b>DARU-net</b>
+      <i>地震観測網 · SEISMIC OBSERVATION NETWORK</i>
     </span>
   </div>
 
@@ -194,32 +194,39 @@
         <span class="pn-m dim">受信した範囲で集計</span>
       </div>
       <div class="pn-body act">
+       <div class="act-main">
         <div class="act-nums">
           <div class="an"><span class="an-k">24時間<i>24H</i></span><b id="st24">0</b></div>
           <div class="an"><span class="an-k">7日<i>7D</i></span><b id="st7d">0</b></div>
           <div class="an"><span class="an-k">受信<i>TOTAL</i></span><b id="stTotal">0</b></div>
           <div class="an"><span class="an-k">最大M<i>MAX MAG</i></span><b id="stMag">—</b></div>
         </div>
-        <p class="act-range" id="stRange">まだ地震情報を受信していません</p>
-        <div class="act-sec">
-          <span class="act-t">最大震度の分布<i>BY INTENSITY</i></span>
-          <div class="sb-bars" id="stClass"></div>
-          <span class="act-note" id="stUnknown"></span>
+        <div class="act-dists">
+          <div class="act-sec">
+            <span class="act-t">最大震度の分布<i>BY INTENSITY</i></span>
+            <div class="sb-bars" id="stClass"></div>
+            <span class="act-note" id="stUnknown"></span>
+          </div>
+          <div class="act-sec">
+            <span class="act-t">深さの分布<i>BY DEPTH</i></span>
+            <div class="sd-rows" id="stDepth"></div>
+          </div>
+          <div class="act-sec">
+            <span class="act-t">震央地名<i>BY REGION</i></span>
+            <div class="sr-rows" id="stRegion"></div>
+          </div>
         </div>
-        <div class="act-sec">
-          <span class="act-t">深さの分布<i>BY DEPTH</i></span>
-          <div class="sd-rows" id="stDepth"></div>
-        </div>
-        <div class="act-sec">
-          <span class="act-t">震央地名<i>BY REGION</i></span>
-          <div class="sr-rows" id="stRegion"></div>
-        </div>
+       </div>
+       <p class="act-range" id="stRange">まだ地震情報を受信していません</p>
       </div>
     </article>
   </section>
 
   <!-- 右端: 計器とログ。数字を細かく出す列（地図やグラフはここに置かない） -->
   <section class="col col-d">
+   <!-- 状況と計器を1つにまとめて、盤面の上段に収める。こうしておくと系統ログが
+        下段の先頭になり、地震情報と頭が揃う（style.css の .col-d を参照） -->
+   <div class="col-d-top">
     <!-- 観測・通信の実測値。それらしい指標は作らず、測れた値だけを出す。
          系統ログには流れて消える数字を、ここでは常設の計器として据える -->
     <article class="pn" id="pStats">
@@ -306,7 +313,8 @@
       </div>
     </article>
 
-    <!-- 受信した地震の統計。数えられるのは受信した範囲だけなので、その範囲も出す -->
+   </div>
+
     <!-- いま起きていることを1行ずつ流す。行の中身はすべて実測で、架空の行は出さない -->
     <article class="pn" id="pSysLog">
       <div class="pn-hd">
