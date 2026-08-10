@@ -15,8 +15,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-y7CWEfIL.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-C9fzyKmE.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BsUWrrts.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-Pw5BKdeW.css">
 </head>
 <body class="mode-mon">
 
@@ -157,6 +157,14 @@
               <option value="10">10 gal 以上</option>
               <option value="25">25 gal 以上</option>
               <option value="50">50 gal 以上</option>
+            </select>
+          </label>
+          <label class="sel" title="タブを裏に回したときの強震モニタの取得。止めると要求数は最も少なくなりますが、戻ったときに推移が途切れています。続ける場合もブラウザ自身が間引くので、5分を超えると1分に1回程度まで落ちます（地震情報とEEWはWebSocketなので裏でも届きます）">
+            <span class="sel-k">裏のタブ<i>BACKGROUND</i></span>
+            <select id="selBg">
+              <option value="stop">取得を止める</option>
+              <option value="slow">5秒間隔で続ける</option>
+              <option value="full">間隔を変えず続ける</option>
             </select>
           </label>
           <label class="sel" title="リアルタイム震度の図で枠を出す境目。地図の追尾や検知音とは別の設定です">
@@ -449,6 +457,17 @@
       <b id="eewTitle">緊急地震速報</b>
       <span class="eew-en">EARTHQUAKE EARLY WARNING</span>
       <span class="eew-src" id="eewSrc">—</span>
+      <!-- 手で閉じられるようにする。鳴り続ける音を止める手立てが
+           ヘッダの小さな「音声」しか無いのは、警報の最中に探させることになる。
+           閉じても受信は続き、最終速報の欄には残る -->
+      <button class="btn eew-mute" id="btnEewMute" type="button"
+              title="警報音だけを止めます。画面と秒読みはそのまま続きます">
+        <b>音を止める</b><i>MUTE</i>
+      </button>
+      <button class="btn eew-dismiss" id="btnEewClose" type="button"
+              title="警報画面を閉じて監視に戻ります。受信は続き、最終速報の欄に残ります（Escでも閉じられます）">
+        <b>警報を閉じる</b><i>DISMISS · ESC</i>
+      </button>
     </div>
     <div class="eew-body">
       <div class="eew-main">
