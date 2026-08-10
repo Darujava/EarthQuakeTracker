@@ -8,14 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-  <!-- アイコンは public/ 置き。元画像と切り出し位置は assets/icons.md -->
+  <!-- アイコンは public/logo.svg から起こしている（probe/icons.mjs 相当の手順）。
+       小さい寸法ほど線を太くしないと消えるので、16/32/48で線幅を変えてある -->
   <link rel="icon" type="image/png" sizes="16x16" href="/EarthQuakeTracker/favicon-16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/EarthQuakeTracker/favicon-32.png">
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CEBsBAm6.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-DxzECHyw.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CGh6zwtf.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CNeyjPHB.css">
 </head>
 <body class="mode-mon">
 
@@ -26,7 +27,20 @@
 
 <header class="hd">
   <div class="brand">
-    <span class="brand-mark" aria-hidden="true"></span>
+    <!-- フクロウ。夜通し見張る鳥で、24時間動かし続ける観測卓の役どころに合う。
+         目はそのまま波の輪にしてある（中心の点＝震源、輪＝P波とS波）。
+         色は札の文字色を継ぐので currentColor のまま。public/logo.svg と同じ形 -->
+    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4.6 4.1 L3.4 1.3 L6.6 2.5" />
+      <path d="M19.4 4.1 L20.6 1.3 L17.4 2.5" />
+      <path d="M4 9.3c0-4.2 3.6-6.9 8-6.9s8 2.7 8 6.9v3.9c0 4.7-3.6 8-8 8s-8-3.3-8-8z" />
+      <circle cx="8.5" cy="9.9" r="3" />
+      <circle cx="15.5" cy="9.9" r="3" />
+      <circle cx="8.5" cy="9.9" r="1.25" />
+      <circle cx="15.5" cy="9.9" r="1.25" />
+      <path d="M12 12.4 L10.6 14.9 L13.4 14.9 Z" />
+    </svg>
     <span class="brand-t">
       <b>DARU-net</b>
       <i>地震観測網 · SEISMIC OBSERVATION NETWORK</i>
