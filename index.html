@@ -15,8 +15,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CGh6zwtf.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-CNeyjPHB.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-y7CWEfIL.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-C9fzyKmE.css">
 </head>
 <body class="mode-mon">
 
@@ -144,6 +144,28 @@
         <button class="btn mini" id="kmoniCfg" type="button"><b>設定</b><i>CONFIG</i></button>
       </div>
       <div class="kmoni-setup" id="kmoniSetup" hidden>
+        <!-- 枠を出す境目。頻度の好みは人によるので手で決められるようにする。
+             既定より下げると平常時から出っぱなしになる（静穏時でも全国最大は
+             1〜1.6gal 出ている） -->
+        <div class="row box-row">
+          <label class="sel" title="最大加速度の図で枠を出す境目。全国の中央値の8倍か、この値か、大きい方を使います。静穏時でも全国最大は1〜1.6gal出ているので、下げると枠が出っぱなしになります">
+            <span class="sel-k">加速度の枠<i>PGA BOX</i></span>
+            <select id="selBoxGal">
+              <option value="0">出さない</option>
+              <option value="2">2 gal 以上</option>
+              <option value="5">5 gal 以上</option>
+              <option value="10">10 gal 以上</option>
+              <option value="25">25 gal 以上</option>
+              <option value="50">50 gal 以上</option>
+            </select>
+          </label>
+          <label class="sel" title="リアルタイム震度の図で枠を出す境目。地図の追尾や検知音とは別の設定です">
+            <span class="sel-k">震度の枠<i>INTENSITY BOX</i></span>
+            <!-- 中身は app.ts が組む。手で書くと階級の対応がずれる
+                 （リアルタイム震度0.5は震度0ではなく震度1相当。実際に一度間違えた） -->
+            <select id="selBoxShindo"></select>
+          </label>
+        </div>
         <p>中継プロキシのURL。空欄にすると既定のプロキシに戻ります。</p>
         <div class="row">
           <input id="kmoniUrl" type="url" placeholder="https://your-worker.workers.dev" spellcheck="false">
