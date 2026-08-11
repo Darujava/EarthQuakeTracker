@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BsUWrrts.js"></script>
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-E0-cWc2T.js"></script>
   <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-Pw5BKdeW.css">
 </head>
 <body class="mode-mon">
@@ -150,14 +150,8 @@
         <div class="row box-row">
           <label class="sel" title="最大加速度の図で枠を出す境目。全国の中央値の8倍か、この値か、大きい方を使います。静穏時でも全国最大は1〜1.6gal出ているので、下げると枠が出っぱなしになります">
             <span class="sel-k">加速度の枠<i>PGA BOX</i></span>
-            <select id="selBoxGal">
-              <option value="0">出さない</option>
-              <option value="2">2 gal 以上</option>
-              <option value="5">5 gal 以上</option>
-              <option value="10">10 gal 以上</option>
-              <option value="25">25 gal 以上</option>
-              <option value="50">50 gal 以上</option>
-            </select>
+            <!-- 中身は app.ts が FLOOR_CHOICES から組む（選択肢と既定がずれないように） -->
+            <select id="selBoxGal"></select>
           </label>
           <label class="sel" title="タブを裏に回したときの強震モニタの取得。止めると要求数は最も少なくなりますが、戻ったときに推移が途切れています。続ける場合もブラウザ自身が間引くので、5分を超えると1分に1回程度まで落ちます（地震情報とEEWはWebSocketなので裏でも届きます）">
             <span class="sel-k">裏のタブ<i>BACKGROUND</i></span>
