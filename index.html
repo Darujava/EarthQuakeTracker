@@ -16,8 +16,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-E0-cWc2T.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-Pw5BKdeW.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CaohYh9M.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BBBobbHC.css">
 </head>
 <body class="mode-mon">
 
@@ -195,6 +195,8 @@
         <label class="pn-sel" title="縦の目盛り。全行に同じ目盛りが効く。破線は震度0の位置。上端を超えた値は上端で止まり、行の上辺に頭打ちの印が出る">
           <span>目盛り</span>
           <select id="selScale"></select>
+          <!-- 自動のときに実際に使っている範囲。何倍に伸ばしているかを隠さない -->
+          <b class="pn-range" id="scaleRange"></b>
         </label>
         <span class="pn-m dim">最大3分 · 1Hz</span>
       </div>
