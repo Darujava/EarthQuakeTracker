@@ -2,7 +2,7 @@
      role="img" aria-label="DARU-net 観測章">
   <title>DARU-net</title>
   <desc>
-    円形の章。縁に名称、下に方針、中央にフクロウ（目は波の輪）、その周りに観測網の結び。
+    円形の章。縁に名称、下に方針、周りに観測網の結び。中心は空けてあり、ロゴが入る。
     数字は実測値で、1Hzは取得間隔、1,628点は強震モニタの観測点数。
   </desc>
   <!--
@@ -13,6 +13,11 @@
 
     網の意匠: 放射する線と、輪との交点に置いた結び目。観測点がつながって面になる、
     というこの画面の中身をそのまま形にしている。二重の輪はP波とS波。
+
+    中心にフクロウを描いていたが、顔が怖いと言われたので取り払った。
+    中心は半径70ぶん空けてあり、そこには利用者のロゴ（public/logo.png）を
+    別の層で重ねる。この章は mask で一色に潰して使うので、元の色を保ちたい絵を
+    この中に入れてはいけない。
 
     弧の向きに注意。下側の文字は左から右へ**円の下を通る**弧に載せないと逆さまになる。
     SVGの円弧は sweep=1 が画面上で時計回りなので、下側の弧は sweep=0 で描く。
@@ -26,8 +31,10 @@
     <path id="rimTop" d="M 200,200 m -160,0 a 160,160 0 0 1 320,0" fill="none" />
     <path id="rimBottom" d="M 200,200 m -174,0 a 174,174 0 0 0 348,0" fill="none" />
     <path id="mottoArc" d="M 200,200 m -146,0 a 146,146 0 0 0 292,0" fill="none" />
-    <!-- 網の一本ぶん。8方向へ回して使う -->
-    <path id="spoke" d="M200 138 L200 62" fill="none" />
+    <!-- 網の一本ぶん。8方向へ回して使う。
+         中心の r=70 は空けてある — そこは利用者のロゴが入る場所で、
+         線が重なると絵が読めなくなる -->
+    <path id="spoke" d="M200 130 L200 62" fill="none" />
     <g id="node">
       <circle cx="200" cy="102" r="2.6" />
       <circle cx="200" cy="68" r="2" />
@@ -58,18 +65,9 @@
       <use href="#node" transform="rotate(270 200 200)" /><use href="#node" transform="rotate(315 200 200)" />
     </g>
 
-    <!-- 中央のフクロウ。header と public/logo.svg と同じ形（24pxの図を4.2倍） -->
-    <g transform="translate(200 200) scale(4.2) translate(-12 -12)"
-       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4.6 4.1 L3.4 1.3 L6.6 2.5" />
-      <path d="M19.4 4.1 L20.6 1.3 L17.4 2.5" />
-      <path d="M4 9.3c0-4.2 3.6-6.9 8-6.9s8 2.7 8 6.9v3.9c0 4.7-3.6 8-8 8s-8-3.3-8-8z" />
-      <circle cx="8.5" cy="9.9" r="3" />
-      <circle cx="15.5" cy="9.9" r="3" />
-      <circle cx="8.5" cy="9.9" r="1.25" fill="currentColor" stroke="none" />
-      <circle cx="15.5" cy="9.9" r="1.25" fill="currentColor" stroke="none" />
-      <path d="M12 12.4 L10.6 14.9 L13.4 14.9 Z" />
-    </g>
+    <!-- 中心（半径70）は空けてある。ここには利用者のロゴを別の層で重ねる。
+         この章の中には描かない — ロゴは元の色と線のまま出したいので、
+         色を一色に潰す mask の層に混ぜてはいけない。CSS 側の .d3-seal-mk を見ること -->
   </g>
 
   <g fill="currentColor" font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace">
@@ -85,8 +83,8 @@
     <text font-size="10.5" font-weight="700" letter-spacing="2.2" opacity=".72">
       <textPath href="#mottoArc" startOffset="50%" text-anchor="middle">OBSERVED, NOT ESTIMATED</textPath>
     </text>
-    <!-- フクロウの上下: 実測値。飾りの数字は置かない -->
-    <text x="200" y="136" font-size="9" letter-spacing="2.6" text-anchor="middle" opacity=".62">1 Hz</text>
-    <text x="200" y="276" font-size="9" letter-spacing="2.6" text-anchor="middle" opacity=".62">1,628 OBS</text>
+    <!-- ロゴの上下: 実測値。飾りの数字は置かない -->
+    <text x="200" y="116" font-size="9" letter-spacing="2.6" text-anchor="middle" opacity=".62">1 Hz</text>
+    <text x="200" y="296" font-size="9" letter-spacing="2.6" text-anchor="middle" opacity=".62">1,628 OBS</text>
   </g>
 </svg>

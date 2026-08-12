@@ -16,8 +16,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Cmsj1bPq.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BcVr2O79.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BAi8X_fC.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BppMnDns.css">
 </head>
 <body class="mode-mon">
 
@@ -387,9 +387,12 @@
         <p class="max-hint">Esc または「全画面」で戻る</p>
         <!-- 全画面のときだけ出す解析用の計器。出す値はすべて実測で、作った指標は置かない -->
         <div class="d3-hud" id="d3Hud" aria-hidden="true">
-          <!-- 章。全画面にだけ置く — 縁の文字が読める大きさ（およそ170px以上）が要るので、
-               54pxのヘッダには入らない。実体は public/emblem.svg -->
-          <div class="d3-seal"></div>
+          <!-- 章。全画面にだけ置く — 縁の文字が読める大きさが要るので、54pxのヘッダには入らない。
+               輪と文字は public/emblem.svg、中心のロゴは public/logo.png。
+               2枚に分けてあるのは、輪は盤面の色を継がせ、ロゴは元の色のまま出すため -->
+          <div class="d3-seal">
+            <span class="d3-seal-mk"></span>
+          </div>
           <div class="hud-card hud-cam">
             <span class="hud-t">視点<i>CAMERA</i></span>
             <div class="hud-rows">
