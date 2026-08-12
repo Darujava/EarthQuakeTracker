@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400"
+     role="img" aria-label="DARU-net 観測章">
+  <title>DARU-net</title>
+  <desc>
+    円形の章。縁に名称、下に方針、中央にフクロウ（目は波の輪）、その周りに観測網の結び。
+    数字は実測値で、1Hzは取得間隔、1,628点は強震モニタの観測点数。
+  </desc>
+  <!--
+    様式（縁取り文字のある円章）は印章の古い型をそのまま使っている。中身は全部この
+    プロジェクトのもの。**実在しない権威を騙る文言は入れない** — 「特務機関」や
+    「関係者以外立入禁止」の類は、個人の観測画面が名乗ってよい肩書きではない。
+    代わりに置いたのは実測値で、1Hz は取得間隔、1,628点は観測点の数。
+
+    網の意匠: 放射する線と、輪との交点に置いた結び目。観測点がつながって面になる、
+    というこの画面の中身をそのまま形にしている。二重の輪はP波とS波。
+
+    弧の向きに注意。下側の文字は左から右へ**円の下を通る**弧に載せないと逆さまになる。
+    SVGの円弧は sweep=1 が画面上で時計回りなので、下側の弧は sweep=0 で描く。
+    （一度 sweep=1 のまま置いて、下の2行が上下逆に出た）
+
+    放射線は中心から引かない。中心にはフクロウが居るので、線が顔を横切ってしまう。
+    r=62（フクロウの外側）から始める。
+  -->
+  <defs>
+    <!-- 文字の下端が通る円。文字は上側では外向き、下側では内向きに立つ -->
+    <path id="rimTop" d="M 200,200 m -160,0 a 160,160 0 0 1 320,0" fill="none" />
+    <path id="rimBottom" d="M 200,200 m -174,0 a 174,174 0 0 0 348,0" fill="none" />
+    <path id="mottoArc" d="M 200,200 m -146,0 a 146,146 0 0 0 292,0" fill="none" />
+    <!-- 網の一本ぶん。8方向へ回して使う -->
+    <path id="spoke" d="M200 138 L200 62" fill="none" />
+    <g id="node">
+      <circle cx="200" cy="102" r="2.6" />
+      <circle cx="200" cy="68" r="2" />
+    </g>
+  </defs>
+
+  <g fill="none" stroke="currentColor">
+    <!-- 縁の輪。外は細く、内は太く -->
+    <circle cx="200" cy="200" r="196" stroke-width="1" opacity=".55" />
+    <circle cx="200" cy="200" r="182" stroke-width="2.2" />
+    <circle cx="200" cy="200" r="152" stroke-width="1" opacity=".55" />
+
+    <!-- 観測網。放射する線＝観測点から集まってくる筋 -->
+    <g stroke-width="1" opacity=".4">
+      <use href="#spoke" /><use href="#spoke" transform="rotate(45 200 200)" />
+      <use href="#spoke" transform="rotate(90 200 200)" /><use href="#spoke" transform="rotate(135 200 200)" />
+      <use href="#spoke" transform="rotate(180 200 200)" /><use href="#spoke" transform="rotate(225 200 200)" />
+      <use href="#spoke" transform="rotate(270 200 200)" /><use href="#spoke" transform="rotate(315 200 200)" />
+      <!-- 網の横糸。放射だけだと「網」に見えない -->
+      <circle cx="200" cy="200" r="98" stroke-dasharray="3 7" />
+      <circle cx="200" cy="200" r="132" stroke-dasharray="3 7" />
+    </g>
+    <!-- 結び目は放射線と輪の交点に置く。交点に無いと網に見えない -->
+    <g fill="currentColor" stroke="none" opacity=".7">
+      <use href="#node" /><use href="#node" transform="rotate(45 200 200)" />
+      <use href="#node" transform="rotate(90 200 200)" /><use href="#node" transform="rotate(135 200 200)" />
+      <use href="#node" transform="rotate(180 200 200)" /><use href="#node" transform="rotate(225 200 200)" />
+      <use href="#node" transform="rotate(270 200 200)" /><use href="#node" transform="rotate(315 200 200)" />
+    </g>
+
+    <!-- 中央のフクロウ。header と public/logo.svg と同じ形（24pxの図を4.2倍） -->
+    <g transform="translate(200 200) scale(4.2) translate(-12 -12)"
+       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.6 4.1 L3.4 1.3 L6.6 2.5" />
+      <path d="M19.4 4.1 L20.6 1.3 L17.4 2.5" />
+      <path d="M4 9.3c0-4.2 3.6-6.9 8-6.9s8 2.7 8 6.9v3.9c0 4.7-3.6 8-8 8s-8-3.3-8-8z" />
+      <circle cx="8.5" cy="9.9" r="3" />
+      <circle cx="15.5" cy="9.9" r="3" />
+      <circle cx="8.5" cy="9.9" r="1.25" fill="currentColor" stroke="none" />
+      <circle cx="15.5" cy="9.9" r="1.25" fill="currentColor" stroke="none" />
+      <path d="M12 12.4 L10.6 14.9 L13.4 14.9 Z" />
+    </g>
+  </g>
+
+  <g fill="currentColor" font-family="'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace">
+    <!-- 縁の上: 名称 -->
+    <text font-size="20" font-weight="700" letter-spacing="5.4">
+      <textPath href="#rimTop" startOffset="50%" text-anchor="middle">DARU-net</textPath>
+    </text>
+    <!-- 縁の下: 何であるか。肩書きではなく、していることを書く -->
+    <text font-size="11" font-weight="700" letter-spacing="3.4" opacity=".82">
+      <textPath href="#rimBottom" startOffset="50%" text-anchor="middle">SEISMIC OBSERVATION NETWORK</textPath>
+    </text>
+    <!-- 内側の弧: 方針。このプロジェクトが一貫して守っている一行 -->
+    <text font-size="10.5" font-weight="700" letter-spacing="2.2" opacity=".72">
+      <textPath href="#mottoArc" startOffset="50%" text-anchor="middle">OBSERVED, NOT ESTIMATED</textPath>
+    </text>
+    <!-- フクロウの上下: 実測値。飾りの数字は置かない -->
+    <text x="200" y="136" font-size="9" letter-spacing="2.6" text-anchor="middle" opacity=".62">1 Hz</text>
+    <text x="200" y="276" font-size="9" letter-spacing="2.6" text-anchor="middle" opacity=".62">1,628 OBS</text>
+  </g>
+</svg>
