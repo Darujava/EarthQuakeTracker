@@ -16,8 +16,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-vXchzF7m.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-uI__vsPS.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-DkEKCQ0X.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BgXumSbG.css">
 </head>
 <body class="mode-mon">
 
@@ -396,6 +396,19 @@
             <div class="hud-bars" id="hudDepth"></div>
             <span class="hud-n" id="hudCounts">—</span>
           </div>
+          <!-- プレート境界。全画面のときだけ出す。既定は入で、切れるようにしてある。
+               これは観測ではなく published された地質モデルなので、凡例に出典を書く -->
+          <div class="hud-card hud-plate">
+            <label class="hud-t hud-sw">
+              <input type="checkbox" id="chkPlates" checked>
+              <span>プレート境界<i>PLATE BOUNDARY</i></span>
+            </label>
+            <div class="hud-key">
+              <span><em class="pk-sub"></em>沈み込み帯（海溝・トラフ）</span>
+              <span><em class="pk-oth"></em>その他の境界</span>
+            </div>
+            <span class="hud-n">Bird (2003) PB2002 · ODC-By 1.0<br>観測ではなく地質モデル。海底面での位置のみ</span>
+          </div>
           <div class="hud-card hud-sel" id="hudSel" hidden>
             <span class="hud-t">選択中<i>SELECTED</i></span>
             <b class="hud-name" id="hudSelName">—</b>
@@ -437,7 +450,7 @@
 
 <footer class="ft">
   <span class="ft-k">DATA LINK</span>
-  <span class="ft-mq"><span class="ft-run" id="ticker">P2P地震情報 / 強震モニタ(NIED) / USGS / 地図 © OpenStreetMap contributors © CARTO</span></span>
+  <span class="ft-mq"><span class="ft-run" id="ticker">P2P地震情報 / 強震モニタ(NIED) / USGS / 地図 © OpenStreetMap contributors © CARTO / プレート境界 Bird (2003) PB2002 © Hugo Ahlenius, Nordpil (ODC-By 1.0)</span></span>
   <span class="ft-note">本システムは参考情報であり、気象庁の発表する警報・情報に代替するものではありません</span>
 </footer>
 
