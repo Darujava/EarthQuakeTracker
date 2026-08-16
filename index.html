@@ -16,8 +16,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-DkEKCQ0X.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BgXumSbG.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Cqfz7UM6.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-Ortj87tH.css">
 </head>
 <body class="mode-mon">
 
@@ -57,6 +57,12 @@
     <button class="btn" id="btnSound" type="button" aria-pressed="false"
             title="音を鳴らす大元の入切。緊急地震速報の警報音・秒読みと、揺れ検知音はここが「入」のときだけ鳴る">
       <b id="btnSoundJp">音声 切</b><i id="btnSoundEn">SOUND OFF</i>
+    </button>
+    <!-- タブが裏に回っているときだけ、速報と揺れ検知をOSの通知に出す。
+         ブラウザを閉じている間は出せない（Web Pushとサーバーが要る） -->
+    <button class="btn" id="btnNotify" type="button" aria-pressed="false"
+            title="タブが裏に回っているときだけ、警報と揺れ検知をOSの通知に出します。画面を見ている間は出しません。ブラウザを閉じている間は届きません">
+      <b id="btnNotifyJp">通知 切</b><i id="btnNotifyEn">NOTIFY OFF</i>
     </button>
     <label class="sel" title="設定地点の予測震度がこの値以上のときだけ警報画面と音を出す">
       <span class="sel-k">警報しきい値<i>ALERT MIN.</i></span>
@@ -289,6 +295,8 @@
             <span><i>深さ</i><b id="eewlDepth">—</b></span>
             <span><i>最大予測震度</i><b id="eewlInt">—</b></span>
             <span class="eewl-s" id="eewlSrc">—</span>
+            <!-- 答え合わせ。予測と実測を並べる。実測が取れるのは揺れが収まったあと -->
+            <span class="eewl-v" id="eewlCheck" hidden></span>
           </div>
         </div>
       </div>
@@ -408,6 +416,16 @@
               <span><em class="pk-oth"></em>その他の境界</span>
             </div>
             <span class="hud-n">Bird (2003) PB2002 · ODC-By 1.0<br>観測ではなく地質モデル。海底面での位置のみ</span>
+          </div>
+          <!-- 震源の断面。画面の中心を通る東西の測線で切る。
+               地図を動かせば測線も動く（中心の緯度で切っている） -->
+          <div class="hud-card hud-sect" id="hudSect">
+            <label class="hud-t hud-sw">
+              <input type="checkbox" id="chkSection" checked>
+              <span>震源の断面<i>CROSS SECTION</i></span>
+            </label>
+            <canvas id="sectCanvas" class="sect-cv"></canvas>
+            <span class="hud-n" id="sectNote">—</span>
           </div>
           <div class="hud-card hud-sel" id="hudSel" hidden>
             <span class="hud-t">選択中<i>SELECTED</i></span>
