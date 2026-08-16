@@ -16,8 +16,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-Cqfz7UM6.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-Ortj87tH.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BXdyebit.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-ByV2gW_A.css">
 </head>
 <body class="mode-mon">
 
@@ -384,12 +384,7 @@
         <p class="max-hint">Esc または「全画面」で戻る</p>
         <!-- 全画面のときだけ出す解析用の計器。出す値はすべて実測で、作った指標は置かない -->
         <div class="d3-hud" id="d3Hud" aria-hidden="true">
-          <!-- 章。全画面にだけ置く — 縁の文字が読める大きさが要るので、54pxのヘッダには入らない。
-               輪と文字は public/emblem.svg、中心のロゴは public/logo.png。
-               2枚に分けてあるのは、輪は盤面の色を継がせ、ロゴは元の色のまま出すため -->
-          <div class="d3-seal">
-            <span class="d3-seal-mk"></span>
-          </div>
+          <div class="hud-left">
           <div class="hud-card hud-cam">
             <span class="hud-t">視点<i>CAMERA</i></span>
             <div class="hud-rows">
@@ -399,31 +394,40 @@
               <span><i>画面中心</i><b id="hudCenter">—</b></span>
             </div>
           </div>
-          <div class="hud-card hud-depth">
-            <span class="hud-t">深さの分布<i>BY DEPTH</i></span>
-            <div class="hud-bars" id="hudDepth"></div>
-            <span class="hud-n" id="hudCounts">—</span>
-          </div>
-          <!-- プレート境界。全画面のときだけ出す。既定は入で、切れるようにしてある。
-               これは観測ではなく published された地質モデルなので、凡例に出典を書く -->
-          <div class="hud-card hud-plate">
-            <label class="hud-t hud-sw">
+          <!-- 重ねるものの入切。札を分けると数が増えて画面が混むので1枚にまとめてある -->
+          <div class="hud-card hud-view">
+            <span class="hud-t">重ねる<i>OVERLAY</i></span>
+            <label class="hud-sw">
               <input type="checkbox" id="chkPlates" checked>
-              <span>プレート境界<i>PLATE BOUNDARY</i></span>
+              <span>プレート境界</span>
             </label>
             <div class="hud-key">
               <span><em class="pk-sub"></em>沈み込み帯（海溝・トラフ）</span>
               <span><em class="pk-oth"></em>その他の境界</span>
             </div>
-            <span class="hud-n">Bird (2003) PB2002 · ODC-By 1.0<br>観測ではなく地質モデル。海底面での位置のみ</span>
+            <label class="hud-sw">
+              <input type="checkbox" id="chkSection" checked>
+              <span>震源の断面</span>
+            </label>
+            <div class="hud-key">
+              <span><em class="pk-sect"></em>いま切っている位置</span>
+            </div>
+            <span class="hud-n">プレート境界は Bird (2003) PB2002 · ODC-By 1.0。<br>観測ではなく地質モデルで、海底面での位置のみ</span>
+          </div>
+          </div>
+          <div class="hud-card hud-depth">
+            <span class="hud-t">深さの分布<i>BY DEPTH</i></span>
+            <div class="hud-bars" id="hudDepth"></div>
+            <span class="hud-n" id="hudCounts">—</span>
           </div>
           <!-- 震源の断面。画面の中心を通る東西の測線で切る。
                地図を動かせば測線も動く（中心の緯度で切っている） -->
           <div class="hud-card hud-sect" id="hudSect">
-            <label class="hud-t hud-sw">
-              <input type="checkbox" id="chkSection" checked>
-              <span>震源の断面<i>CROSS SECTION</i></span>
-            </label>
+            <span class="hud-t">
+              震源の断面<i>CROSS SECTION</i>
+              <!-- どこを切っているかを見出しに出す。図だけ見せても場所が分からない -->
+              <b class="sect-where" id="sectWhere">—</b>
+            </span>
             <canvas id="sectCanvas" class="sect-cv"></canvas>
             <span class="hud-n" id="sectNote">—</span>
           </div>
