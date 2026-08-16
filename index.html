@@ -16,8 +16,8 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
   <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
   <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
-  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-BXdyebit.js"></script>
-  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-ByV2gW_A.css">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-CU5ewiqw.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BImuH3mA.css">
 </head>
 <body class="mode-mon">
 
@@ -297,6 +297,12 @@
             <span class="eewl-s" id="eewlSrc">—</span>
             <!-- 答え合わせ。予測と実測を並べる。実測が取れるのは揺れが収まったあと -->
             <span class="eewl-v" id="eewlCheck" hidden></span>
+            <!-- 記録は既定で畳んでおく。盤面が混むのを避けつつ、
+                 「前はどうだったか」を見られる場所は用意しておく -->
+            <button class="eewl-more" id="eewlMore" type="button" aria-expanded="false" hidden>
+              <span class="em-k">答え合わせの記録</span><span class="em-v" id="eewlTally">—</span>
+            </button>
+            <ol class="eewl-hist" id="eewlHist" hidden></ol>
           </div>
         </div>
       </div>
@@ -412,6 +418,14 @@
             <div class="hud-key">
               <span><em class="pk-sect"></em>いま切っている位置</span>
             </div>
+            <!-- 過去の震源を期間で絞る。1990年からの全部を重ねると濃すぎて構造が潰れる。
+                 立体図の雲と断面の両方に同じものを効かせる -->
+            <label class="sel hud-sel-period"
+                   title="立体図の雲と断面図の両方に効きます。時刻が読めない地震は、絞っているときは除きます">
+              <span class="sel-k">過去の震源<i>PERIOD</i></span>
+              <!-- 中身は app.ts が組む（期間の名前に実際の西暦を入れるため） -->
+              <select id="selPeriod"></select>
+            </label>
             <span class="hud-n">プレート境界は Bird (2003) PB2002 · ODC-By 1.0。<br>観測ではなく地質モデルで、海底面での位置のみ</span>
           </div>
           </div>
@@ -427,6 +441,12 @@
               震源の断面<i>CROSS SECTION</i>
               <!-- どこを切っているかを見出しに出す。図だけ見せても場所が分からない -->
               <b class="sect-where" id="sectWhere">—</b>
+              <!-- 測線は画面の中心に付いて動くので、地図を回すと断面も変わってしまう。
+                   固定すると、そこを切ったまま視点だけ動かして見比べられる -->
+              <button class="btn mini sect-lock" id="btnSectLock" type="button" aria-pressed="false"
+                      title="いまの測線をその場に固定します。固定中は地図を動かしても断面は変わりません">
+                <b>固定</b><i>LOCK</i>
+              </button>
             </span>
             <canvas id="sectCanvas" class="sect-cv"></canvas>
             <span class="hud-n" id="sectNote">—</span>
