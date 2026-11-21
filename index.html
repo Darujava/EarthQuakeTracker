@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <!-- GitHub Pages は応答ヘッダを足せないので、ここで読み込み元を絞る。
+       要点は script-src 'self'：外から紛れ込んだ文字列がHTMLとして入っても、
+       <script> も onerror= も動かない。
+       connect-src が https: 全体なのは、中継プロキシのURLを利用者が設定で変えられるため。
+       足すときは、地図(blob: の worker)・フォント・P2Pの WebSocket を落とさないこと -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https: wss://api.p2pquake.net http://localhost:* http://127.0.0.1:*; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DARU-net — 地震観測網</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+  <!-- タブの印は犬の写真（assets/icon-src.webp から切り出し）。
+       銘板のフクロウとは別物で、揃えていない — タブの中で探す目印は
+       既に犬で覚えられているので、そこは変えない。詳細は assets/icons.md -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/EarthQuakeTracker/favicon-16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/EarthQuakeTracker/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/EarthQuakeTracker/favicon-48.png">
+  <!-- iOSのホーム画面用。透過を黒で埋められるので、こちらだけ背景を敷いてある -->
+  <link rel="apple-touch-icon" href="/EarthQuakeTracker/apple-touch-icon.png">
+  <script type="module" crossorigin src="/EarthQuakeTracker/assets/index-UuzPzS1z.js"></script>
+  <link rel="stylesheet" crossorigin href="/EarthQuakeTracker/assets/index-BuAr01rE.css">
+</head>
+<body class="mode-mon">
+
+<!-- 画面全体にかける計器の質感。情報は載せない -->
+<div class="fx fx-scan" aria-hidden="true"></div>
+<div class="fx fx-vig" aria-hidden="true"></div>
+
+<header class="hd">
+  <div class="brand">
+    <!-- 利用者のロゴ。線画を描き起こしていた頃と違い、色も線も元のまま出したいので
+         img で置く（currentColor は継がない）。実体は public/logo.png -->
+    <img class="brand-mark" src="/EarthQuakeTracker/logo.png" alt="" width="172" height="180" aria-hidden="true">
+    <span class="brand-t">
+      <b>DARU-net</b>
+      <i>地震観測網 · SEISMIC OBSERVATION NETWORK</i>
+    </span>
+  </div>
+
+  <!-- 状態は灯の点滅ではなく、言葉と数字で出す。
+       点滅はタイマーで回っていただけで、データが届いたかとは無関係だった。
+       強震モニタの遅れは毎秒書き換わるので、数字が動いていること自体が受信の証拠になる -->
+  <div class="hd-facts">
+    <span class="fact" id="factP2p" data-tone="wait" title="P2P地震情報（地震情報・緊急地震速報の配信）との接続">
+      <span class="fact-k">速報（P2P地震情報）</span>
+      <b class="fact-v" id="factP2pV">接続中</b>
+    </span>
+    <span class="fact" id="factKmoni" data-tone="wait" title="防災科研 強震モニタの画像が画面に出るまでの遅れ">
+      <span class="fact-k">強震モニタ</span>
+      <b class="fact-v"><span id="factKmoniV">接続中</span><small id="factKmoniU"></small></b>
+    </span>
+    <!-- 平常時は出さない。「全系監視」は平常時ずっと同じ文言で、何も伝えていなかった -->
+    <span class="fact fact-mode" id="factMode" data-tone="down" hidden>
+      <span class="fact-k">状態</span>
+      <b class="fact-v" id="modeName">警報発令中</b>
+    </span>
+  </div>
+
+  <div class="hd-clock"><span class="tz">JST</span><span id="clock">--:--:--</span></div>
+
+  <div class="hd-btns">
+    <button class="btn" id="btnSound" type="button" aria-pressed="false"
+            title="音を鳴らす大元の入切。緊急地震速報の警報音・秒読みと、揺れ検知音はここが「入」のときだけ鳴る">
+      <b id="btnSoundJp">音声 切</b><i id="btnSoundEn">SOUND OFF</i>
+    </button>
+    <!-- タブが裏に回っているときだけ、速報と揺れ検知をOSの通知に出す。
+         ブラウザを閉じている間は出せない（Web Pushとサーバーが要る） -->
+    <button class="btn" id="btnNotify" type="button" aria-pressed="false"
+            title="タブが裏に回っているときだけ、警報と揺れ検知をOSの通知に出します。画面を見ている間は出しません。ブラウザを閉じている間は届きません">
+      <b id="btnNotifyJp">通知 切</b><i id="btnNotifyEn">NOTIFY OFF</i>
+    </button>
+    <label class="sel" title="設定地点の予測震度がこの値以上のときだけ警報画面と音を出す">
+      <span class="sel-k">警報しきい値<i>ALERT MIN.</i></span>
+      <select id="selThreshold">
+        <option value="-1">すべて</option>
+        <option value="0">震度1以上</option>
+        <option value="1">震度2以上</option>
+        <option value="2">震度3以上</option>
+        <option value="3">震度4以上</option>
+        <option value="4">震度5弱以上</option>
+      </select>
+    </label>
+    <!-- 速報を待たずに、実際に観測された揺れで鳴らす合図。
+         警報（予測）とは別物なので、しきい値も音も分けてある -->
+    <label class="sel" title="全国の観測点で実際に観測された揺れがこの値以上になったら短い音（ピッピ）で知らせる。速報ではなく観測なので、鳴る時点で揺れは始まっています">
+      <span class="sel-k">検知音<i>DETECT</i></span>
+      <select id="selDetect">
+        <option value="-1">切</option>
+        <option value="0">震度1以上</option>
+        <option value="1">震度2以上</option>
+        <option value="2">震度3以上</option>
+        <option value="3">震度4以上</option>
+        <option value="4">震度5弱以上</option>
+      </select>
+    </label>
+  </div>
+</header>
+
+<!-- 警報時のみ現れる斜線帯 -->
+<div class="hazard" aria-hidden="true"></div>
+
+<main class="board">
+  <!-- 系統状態: 実際の接続・受信状態だけを出す（架空の指標は置かない） -->
+
+  <!-- 上の帯: 強震モニタの画像。盤面の幅いっぱいまで使って大きく出す -->
+  <section class="col col-mon">
+    <article class="pn" id="pKmoni">
+      <div class="pn-hd">
+        <span class="pn-t"><b>各地の揺れ</b><i>REALTIME INTENSITY</i></span>
+        <span class="livedot" id="kmoniPulse"></span>
+        <span class="pn-m" id="kmoniTime">--:--:--</span>
+        <span class="pn-m" id="kmoniLag">接続中…</span>
+        <span class="pn-m ok"><b id="rtCount">—</b> 解析点</span>
+      </div>
+      <div class="pn-body kmoni-cnv">
+        <!-- 2種類を同時に出す。切り替え式にすると片方が見えない間に何が起きたか分からない。
+             見出しは画像の外に置く: NIEDの画像には見出しと時刻が焼き込まれているので、
+             重ねると必ず文字が重なる。 -->
+        <figure class="cnv" id="cnvShindo">
+          <figcaption><b>リアルタイム震度</b><span class="note ok">画像解析で数値化</span></figcaption>
+          <div class="cnv-img" id="imgShindo"><canvas id="kmoniCanvas"></canvas></div>
+        </figure>
+        <figure class="cnv" id="cnvAccel">
+          <figcaption><b>最大加速度</b><span class="note dim accel-note">画像のみ（色対応表なし）</span></figcaption>
+          <div class="cnv-img" id="imgAccel"><canvas id="kmoniAccel"></canvas></div>
+        </figure>
+        <!-- 長周期地震動モニタ（別ホスト）。画像の作りは同じだが、
+             色→値の対応表は別物なので数値化はしない -->
+        <figure class="cnv" id="cnvLp" hidden>
+          <figcaption><b>長周期地震動</b><span class="note dim lp-note">画像のみ（色対応表なし）</span></figcaption>
+          <div class="cnv-img" id="imgLp"><canvas id="kmoniLp"></canvas></div>
+        </figure>
+        <p class="cnv-msg" id="kmoniMsg">強震モニタに接続しています…</p>
+      </div>
+      <div class="pn-foot">
+        <label class="chk" title="最大加速度の画像を並べて表示する（切ると取得を止めます）">
+          <input type="checkbox" id="chkAccel" checked>
+          <span>最大加速度<i>PGA</i></span>
+        </label>
+        <label class="chk" title="長周期地震動モニタ（絶対速度応答）を並べて表示する。別ホストだが束にまとめて取るので要求数は増えません">
+          <input type="checkbox" id="chkLp">
+          <span>長周期<i>LPGM</i></span>
+        </label>
+        <span id="kmoniNote">NIED 強震モニタ · 1Hz</span>
+        <button class="btn mini" id="kmoniCfg" type="button"><b>設定</b><i>CONFIG</i></button>
+      </div>
+      <div class="kmoni-setup" id="kmoniSetup" hidden>
+        <!-- 枠を出す境目。頻度の好みは人によるので手で決められるようにする。
+             既定より下げると平常時から出っぱなしになる（静穏時でも全国最大は
+             1〜1.6gal 出ている） -->
+        <div class="row box-row">
+          <label class="sel" title="最大加速度の図で枠を出す境目。全国の中央値の8倍か、この値か、大きい方を使います。静穏時でも全国最大は1〜1.6gal出ているので、下げると枠が出っぱなしになります">
+            <span class="sel-k">加速度の枠<i>PGA BOX</i></span>
+            <!-- 中身は app.ts が FLOOR_CHOICES から組む（選択肢と既定がずれないように） -->
+            <select id="selBoxGal"></select>
+          </label>
+          <label class="sel" title="タブを裏に回したときの強震モニタの取得。止めると要求数は最も少なくなりますが、戻ったときに推移が途切れています。続ける場合もブラウザ自身が間引くので、5分を超えると1分に1回程度まで落ちます（地震情報とEEWはWebSocketなので裏でも届きます）">
+            <span class="sel-k">裏のタブ<i>BACKGROUND</i></span>
+            <select id="selBg">
+              <option value="stop">取得を止める</option>
+              <option value="slow">5秒間隔で続ける</option>
+              <option value="full">間隔を変えず続ける</option>
+            </select>
+          </label>
+          <label class="sel" title="リアルタイム震度の図で枠を出す境目。地図の追尾や検知音とは別の設定です">
+            <span class="sel-k">震度の枠<i>INTENSITY BOX</i></span>
+            <!-- 中身は app.ts が組む。手で書くと階級の対応がずれる
+                 （リアルタイム震度0.5は震度0ではなく震度1相当。実際に一度間違えた） -->
+            <select id="selBoxShindo"></select>
+          </label>
+        </div>
+        <!-- 地図の下敷き。配信側の都合で突然壊れることがあるので（CARTOが2026年に
+             ラスタをAPIキー必須にした）、その場で選び直せるようにしてある -->
+        <div class="row box-row">
+          <label class="sel" title="地図の下敷きの配信元。CARTOは2026年にAPIキーが必要になりました。既定のOpenFreeMapは鍵もアカウントも不要です">
+            <span class="sel-k">地図の下敷き<i>BASEMAP</i></span>
+            <!-- 中身は app.ts が basemap.ts から組む -->
+            <select id="selBasemap"></select>
+          </label>
+          <span class="bm-note" id="basemapNote">—</span>
+        </div>
+        <p>地図タイルのURL（任意）。入れるとその配信元を使います。CARTOのAPIキー付きURLなど。空欄で上の選択に戻ります。</p>
+        <div class="row">
+          <input id="basemapUrl" type="url" placeholder="https://.../{z}/{x}/{y}.png" spellcheck="false">
+          <button class="btn mini" id="basemapSave" type="button"><b>保存</b><i>SAVE</i></button>
+        </div>
+        <p>中継プロキシのURL。空欄にすると既定のプロキシに戻ります。</p>
+        <div class="row">
+          <input id="kmoniUrl" type="url" placeholder="空欄なら既定の中継を使います" spellcheck="false">
+          <button class="btn mini" id="kmoniSave" type="button"><b>保存</b><i>SAVE</i></button>
+        </div>
+        <!-- 止まったときに何が起きていたかを残す。原因を推測ではなく記録で特定するため -->
+        <div class="row diag-row">
+          <span>受信の記録（直近200件）</span>
+          <button class="btn mini" id="kmoniLogCopy" type="button"><b>コピー</b><i>COPY</i></button>
+        </div>
+        <pre class="diag-log" id="kmoniLog" aria-label="強震モニタ受信ログ"></pre>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- 左下: リアルタイム震度の推移 -->
+  <section class="col col-a">
+    <article class="pn" id="pRegion">
+      <div class="pn-hd">
+        <span class="pn-t"><b>全国の観測点</b><i>NATIONWIDE</i></span>
+        <!-- 縦の目盛り。行に使える高さは22px前後しかないので、
+             どこを拡大するかを選べるようにしてある。選んだ範囲は常に見えている -->
+        <label class="pn-sel" title="縦の目盛り。全行に同じ目盛りが効く。破線は震度0の位置。上端を超えた値は上端で止まり、行の上辺に頭打ちの印が出る">
+          <span>目盛り</span>
+          <select id="selScale"></select>
+          <!-- 自動のときに実際に使っている範囲。何倍に伸ばしているかを隠さない -->
+          <b class="pn-range" id="scaleRange"></b>
+        </label>
+        <span class="pn-m dim">最大3分 · 1Hz</span>
+      </div>
+      <div class="pn-body region">
+        <div class="rt-reads">
+          <span class="rt-cell"><b>最寄り<i>NEAREST</i></b><em id="rtNearName">—</em><span class="rt-v" id="rtNearV">—</span></span>
+          <span class="rt-cell"><b>全国最大<i>PEAK</i></b><em id="rtMaxName">—</em><span class="rt-v" id="rtMaxV">—</span></span>
+        </div>
+        <div class="rg-grid" id="regionBoard"></div>
+      </div>
+    </article>
+  </section>
+
+
+  <!-- 右列: 統計 / 地表の観測震度 / 観測履歴 -->
+  <section class="col col-c">
+    <article class="pn" id="pQuake">
+      <div class="pn-hd">
+        <span class="pn-t"><b>地震情報</b><i>EVENT LOG</i></span>
+        <span class="pn-m dim">気象庁発表</span>
+      </div>
+      <div class="pn-body quakebox">
+        <div class="sc" id="shindoChart"></div>
+        <div class="tblwrap">
+          <table>
+            <thead><tr><th>時刻</th><th>震央</th><th>M</th><th>深さ</th><th>震度</th></tr></thead>
+            <tbody id="quakeRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <article class="pn" id="pStats2">
+      <div class="pn-hd">
+        <span class="pn-t"><b>地震活動</b><i>ACTIVITY</i></span>
+        <span class="pn-m dim">受信した範囲で集計</span>
+      </div>
+      <div class="pn-body act">
+       <div class="act-main">
+        <div class="act-nums">
+          <div class="an"><span class="an-k">24時間<i>24H</i></span><b id="st24">0</b></div>
+          <div class="an"><span class="an-k">7日<i>7D</i></span><b id="st7d">0</b></div>
+          <div class="an"><span class="an-k">受信<i>TOTAL</i></span><b id="stTotal">0</b></div>
+          <div class="an"><span class="an-k">最大M<i>MAX MAG</i></span><b id="stMag">—</b></div>
+        </div>
+        <div class="act-dists">
+          <div class="act-sec">
+            <span class="act-t">最大震度の分布<i>BY INTENSITY</i></span>
+            <div class="sb-bars" id="stClass"></div>
+            <span class="act-note" id="stUnknown"></span>
+          </div>
+          <div class="act-sec">
+            <span class="act-t">深さの分布<i>BY DEPTH</i></span>
+            <div class="sd-rows" id="stDepth"></div>
+          </div>
+          <div class="act-sec">
+            <span class="act-t">震央地名<i>BY REGION</i></span>
+            <div class="sr-rows" id="stRegion"></div>
+          </div>
+        </div>
+       </div>
+       <p class="act-range" id="stRange">まだ地震情報を受信していません</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- 右端: 計器とログ。数字を細かく出す列（地図やグラフはここに置かない） -->
+  <section class="col col-d">
+   <!-- 状況と計器を1つにまとめて、盤面の上段に収める。こうしておくと系統ログが
+        下段の先頭になり、地震情報と頭が揃う（style.css の .col-d を参照） -->
+   <div class="col-d-top">
+    <!-- 観測・通信の実測値。それらしい指標は作らず、測れた値だけを出す。
+         系統ログには流れて消える数字を、ここでは常設の計器として据える -->
+    <article class="pn" id="pStats">
+      <div class="pn-hd"><span class="pn-t"><b>状況</b><i>STATUS</i></span><span class="pn-m" id="tagInfo">モニタリング</span></div>
+      <div class="pn-body stats">
+        <!-- 系統状態。左の縦レールから移した。
+             縦に細長い帯だと1つあたり56px幅しか無く、値が「取得中」で切れていた。
+             状況パネルの中なら「システムの状態」としての置き場所としても素直 -->
+        <div class="tele" aria-label="系統状態">
+          <div class="tele-c" id="railLink" data-state="wait"><b>通信</b><i>LINK</i><em id="railLinkV">—</em></div>
+          <div class="tele-c" id="railObsv" data-state="wait"><b>観測</b><i>OBSV</i><em id="railObsvV">—</em></div>
+          <div class="tele-c" id="railGnss" data-state="wait"><b>測位</b><i>GNSS</i><em id="railGnssV">—</em></div>
+          <div class="tele-c tele-mode" id="railMode" data-state="ok"><b>系統</b><i>MODE</i><em id="railModeV">監視</em></div>
+        </div>
+        <div class="stat"><span class="k">受信済み<i>RECEIVED</i></span><span class="v"><b id="statCount">0</b> 件</span></div>
+        <div class="stat"><span class="k">最大震度<i>MAX INT.</i></span><span class="v"><b id="statMax">-</b></span></div>
+        <div class="stat wide"><span class="k">最新<i>LATEST</i></span><span class="v sm" id="statLatest">—</span></div>
+        <!-- 警報板は90秒で引っ込み、系統ログは約50秒で流れて消える。
+             速報を受け取ったという事実がどこにも残らないので、ここに残す。
+             次の報が来るまで消さない -->
+        <div class="stat wide eewl" id="statEew" data-has="0">
+          <span class="k">最終速報<i>LAST EEW</i></span>
+          <div class="eewl-b">
+            <span class="eewl-t" id="eewlTime">--:--:--</span>
+            <span class="eewl-r" id="eewlRep">—</span>
+            <span class="eewl-n" id="eewlName">受信なし</span>
+          </div>
+          <div class="eewl-f">
+            <span><i>M</i><b id="eewlMag">—</b></span>
+            <span><i>深さ</i><b id="eewlDepth">—</b></span>
+            <span><i>最大予測震度</i><b id="eewlInt">—</b></span>
+            <span class="eewl-s" id="eewlSrc">—</span>
+            <!-- 答え合わせ。予測と実測を並べる。実測が取れるのは揺れが収まったあと -->
+            <span class="eewl-v" id="eewlCheck" hidden></span>
+            <!-- 記録は既定で畳んでおく。盤面が混むのを避けつつ、
+                 「前はどうだったか」を見られる場所は用意しておく -->
+            <button class="eewl-more" id="eewlMore" type="button" aria-expanded="false" hidden>
+              <span class="em-k">答え合わせの記録</span><span class="em-v" id="eewlTally">—</span>
+            </button>
+            <ol class="eewl-hist" id="eewlHist" hidden></ol>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="pn" id="pTele">
+      <div class="pn-hd">
+        <span class="pn-t"><b>系統計器</b><i>TELEMETRY</i></span>
+        <span class="pn-m dim">実測のみ</span>
+      </div>
+      <div class="pn-body tele-grid">
+        <div class="tm" title="画像から実際に読み取れた観測点の数。全1,628点のうち何点が読めたか">
+          <span class="tm-k">解析点<i>DECODED</i></span>
+          <span class="tm-v"><b id="tmDecoded">—</b><em>/ <span id="tmTotal">—</span></em></span>
+        </div>
+        <div class="tm" title="読み取れなかった観測点の割合。NIEDの画像に描かれていない点も含む">
+          <span class="tm-k">欠測<i>MISSING</i></span>
+          <span class="tm-v"><b id="tmMiss">—</b></span>
+        </div>
+        <div class="tm" title="要求を出してから本体を読み終えるまで。遅延のうちこちら側の取り分">
+          <span class="tm-k">往復<i>ROUND TRIP</i></span>
+          <span class="tm-v"><b id="tmRt">—</b></span>
+        </div>
+        <div class="tm" title="配信元(NIED)が画像を作り終えるまでの遅れ。ここが大きいならアプリ側でできることは無い">
+          <span class="tm-k">配信元<i>SOURCE</i></span>
+          <span class="tm-v"><b id="tmSrc">—</b></span>
+        </div>
+        <div class="tm" title="画面に出ているコマの古さ。往復＋配信元のおおよその合計">
+          <span class="tm-k">総遅延<i>TOTAL LAG</i></span>
+          <span class="tm-v"><b id="tmLag">—</b></span>
+        </div>
+        <div class="tm" title="直近1分に実際に出した要求の数（推定ではなく実測）">
+          <span class="tm-k">要求/分<i>REQ/MIN</i></span>
+          <span class="tm-v"><b id="tmReq">—</b></span>
+        </div>
+        <div class="tm" title="直近1分の失敗数（時間切れ・エラー）">
+          <span class="tm-k">失敗/分<i>FAILED</i></span>
+          <span class="tm-v"><b id="tmFail">—</b></span>
+        </div>
+        <div class="tm" title="Cloudflare無料枠（1日10万要求 = 69.4要求/分）に対する今の割合">
+          <span class="tm-k">無料枠<i>QUOTA</i></span>
+          <span class="tm-v"><b id="tmQuota">—</b></span>
+        </div>
+      </div>
+    </article>
+
+   </div>
+
+    <!-- いま起きていることを1行ずつ流す。行の中身はすべて実測で、架空の行は出さない -->
+    <article class="pn" id="pSysLog">
+      <div class="pn-hd">
+        <span class="pn-t"><b>系統ログ</b><i>SYSTEM LOG</i></span>
+        <span class="pn-m dim">実測のみ</span>
+      </div>
+      <div class="pn-body">
+        <div class="slog" id="sysLog" role="log" aria-live="off" aria-label="系統ログ"></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 右列: 2つの地図をまとめて右端に置く。立体図と平面図は同じ震源を別の見方で
+       示すもので、離して置くと視線が盤面を横断することになる -->
+  <section class="col col-map">
+    <article class="pn" id="p3d">
+      <div class="pn-hd">
+        <span class="pn-t"><b>震源立体図</b><i>HYPOCENTER DEPTH</i></span>
+        <span class="pn-m" id="tag3d">最近の震源（地下・実スケール）</span>
+        <button class="btn mini" id="btnResetView" type="button"><b>視点</b><i>RESET</i></button>
+        <!-- 立体図だけを画面いっぱいに出す。震源の深さを見るには視野が要る -->
+        <button class="btn mini" id="btn3dMax" type="button" aria-pressed="false"
+                title="震源立体図だけを画面いっぱいに表示する（Esc で戻る）">
+          <b>全画面</b><i>EXPAND</i>
+        </button>
+      </div>
+      <div class="pn-body">
+        <div id="view3d"></div>
+        <p class="max-hint">Esc または「全画面」で戻る</p>
+        <!-- 全画面のときだけ出す解析用の計器。出す値はすべて実測で、作った指標は置かない -->
+        <div class="d3-hud" id="d3Hud" aria-hidden="true">
+          <div class="hud-left">
+          <div class="hud-card hud-cam">
+            <span class="hud-t">視点<i>CAMERA</i></span>
+            <div class="hud-rows">
+              <span><i>上が指す方位</i><b id="hudBearing">—</b></span>
+              <span><i>傾き</i><b id="hudPitch">—</b></span>
+              <span><i>縮尺</i><b id="hudZoom">—</b></span>
+              <span><i>画面中心</i><b id="hudCenter">—</b></span>
+            </div>
+          </div>
+          <!-- 重ねるものの入切。札を分けると数が増えて画面が混むので1枚にまとめてある -->
+          <div class="hud-card hud-view">
+            <span class="hud-t">重ねる<i>OVERLAY</i></span>
+            <label class="hud-sw">
+              <input type="checkbox" id="chkPlates" checked>
+              <span>プレート境界</span>
+            </label>
+            <div class="hud-key">
+              <span><em class="pk-sub"></em>沈み込み帯（海溝・トラフ）</span>
+              <span><em class="pk-oth"></em>その他の境界</span>
+            </div>
+            <label class="hud-sw">
+              <input type="checkbox" id="chkSection" checked>
+              <span>震源の断面</span>
+            </label>
+            <div class="hud-key">
+              <span><em class="pk-sect"></em>いま切っている位置</span>
+            </div>
+            <!-- 過去の震源を期間で絞る。1990年からの全部を重ねると濃すぎて構造が潰れる。
+                 立体図の雲と断面の両方に同じものを効かせる -->
+            <label class="sel hud-sel-period"
+                   title="立体図の雲と断面図の両方に効きます。時刻が読めない地震は、絞っているときは除きます">
+              <span class="sel-k">過去の震源<i>PERIOD</i></span>
+              <!-- 中身は app.ts が組む（期間の名前に実際の西暦を入れるため） -->
+              <select id="selPeriod"></select>
+            </label>
+            <span class="hud-n">プレート境界は Bird (2003) PB2002 · ODC-By 1.0。<br>観測ではなく地質モデルで、海底面での位置のみ</span>
+          </div>
+          </div>
+          <div class="hud-card hud-depth">
+            <span class="hud-t">深さの分布<i>BY DEPTH</i></span>
+            <div class="hud-bars" id="hudDepth"></div>
+            <span class="hud-n" id="hudCounts">—</span>
+          </div>
+          <!-- 震源の断面。画面の中心を通る東西の測線で切る。
+               地図を動かせば測線も動く（中心の緯度で切っている） -->
+          <div class="hud-card hud-sect" id="hudSect">
+            <span class="hud-t">
+              震源の断面<i>CROSS SECTION</i>
+              <!-- どこを切っているかを見出しに出す。図だけ見せても場所が分からない -->
+              <b class="sect-where" id="sectWhere">—</b>
+              <!-- 測線は画面の中心に付いて動くので、地図を回すと断面も変わってしまう。
+                   固定すると、そこを切ったまま視点だけ動かして見比べられる -->
+              <button class="btn mini sect-lock" id="btnSectLock" type="button" aria-pressed="false"
+                      title="いまの測線をその場に固定します。固定中は地図を動かしても断面は変わりません">
+                <b>固定</b><i>LOCK</i>
+              </button>
+            </span>
+            <canvas id="sectCanvas" class="sect-cv"></canvas>
+            <span class="hud-n" id="sectNote">—</span>
+          </div>
+          <div class="hud-card hud-sel" id="hudSel" hidden>
+            <span class="hud-t">選択中<i>SELECTED</i></span>
+            <b class="hud-name" id="hudSelName">—</b>
+            <div class="hud-rows">
+              <span><i>発生</i><b id="hudSelTime">—</b></span>
+              <span><i>M</i><b id="hudSelMag">—</b></span>
+              <span><i>深さ</i><b id="hudSelDepth">—</b></span>
+              <span><i>最大震度</i><b id="hudSelInt">—</b></span>
+              <span><i>震央</i><b id="hudSelPos">—</b></span>
+            </div>
+          </div>
+        </div>
+        <!-- 深さの色スケール。過去震源の雲がどの深さかを読むための凡例 -->
+        <div class="depthkey" id="depthKey">
+          <span class="dk-t"><b>深さ</b><i>DEPTH</i></span>
+          <span class="dk-bar" aria-hidden="true"></span>
+          <span class="dk-l"><i>0</i><i>100</i><i>300</i><i>700km</i></span>
+          <span class="dk-n" id="depthCount">過去の震源を読み込み中…</span>
+        </div>
+      </div>
+    </article>
+    <article class="pn" id="pMap">
+      <div class="pn-hd">
+        <span class="pn-t"><b>震央分布</b><i>EPICENTER MAP</i></span>
+        <span class="pn-m" id="tag2d">最近の震央</span>
+        <span class="pn-m dim">WEB MERCATOR / EPSG:3857</span>
+      </div>
+      <div class="pn-body">
+        <div id="map2d"></div>
+        <!-- 選択中だけ現れる。震度の印を「どの粒度で」置いているかを明示する。
+             気象庁の観測点は市区町村単位だが、その緯度経度は無料の経路では
+             取れないので、県まで粗くして代表点に置いている -->
+        <div class="selnote" id="selNote" hidden></div>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<footer class="ft">
+  <span class="ft-k">DATA LINK</span>
+  <span class="ft-mq"><!-- 地図の出典は app.ts が、実際に使っている下敷きから組む
+                 （設定で配信元を変えられるので、決め打ちだと嘘になる） -->
+            <span class="ft-run" id="ticker">P2P地震情報 / 強震モニタ(NIED) / USGS</span></span>
+  <span class="ft-note">本システムは参考情報であり、気象庁の発表する警報・情報に代替するものではありません</span>
+</footer>
+
+<!-- 警報時のみ現れる。平常時の盤面を覆わないよう独立させている -->
+<div class="eew" id="eewOverlay" aria-hidden="true">
+  <div class="eew-box" role="alertdialog" aria-labelledby="eewTitle">
+    <div class="eew-hd">
+      <span class="eew-mark" aria-hidden="true"></span>
+      <b id="eewTitle">緊急地震速報</b>
+      <span class="eew-en">EARTHQUAKE EARLY WARNING</span>
+      <span class="eew-src" id="eewSrc">—</span>
+      <!-- 手で閉じられるようにする。鳴り続ける音を止める手立てが
+           ヘッダの小さな「音声」しか無いのは、警報の最中に探させることになる。
+           閉じても受信は続き、最終速報の欄には残る -->
+      <button class="btn eew-mute" id="btnEewMute" type="button"
+              title="警報音だけを止めます。画面と秒読みはそのまま続きます">
+        <b>音を止める</b><i>MUTE</i>
+      </button>
+      <button class="btn eew-dismiss" id="btnEewClose" type="button"
+              title="警報画面を閉じて監視に戻ります。受信は続き、最終速報の欄に残ります（Escでも閉じられます）">
+        <b>警報を閉じる</b><i>DISMISS · ESC</i>
+      </button>
+    </div>
+    <div class="eew-body">
+      <div class="eew-main">
+        <!-- 強震モニタの帯と同じ並び: 発生時刻・報数・震源地名 → M・深さ・最大予測震度 -->
+        <div class="eew-band">
+          <span class="eb-t" id="epiTime">--:--:--</span>
+          <span class="eb-r" id="repNo">—</span>
+          <span class="eb-n" id="epiName">—</span>
+        </div>
+        <div class="eew-figs">
+          <span><i>MAGNITUDE</i><b id="epiMag">M --</b></span>
+          <span><i>DEPTH</i><b id="epiDepth">-- km</b></span>
+          <!-- 全国の最大予測震度。右側の「予測震度」は設定地点の推定値で、別物 -->
+          <span><i>最大予測震度</i><b id="epiMaxInt">—</b></span>
+        </div>
+        <p class="eew-warn">強い揺れに警戒してください</p>
+        <div class="waves">
+          <span class="wv p" id="wvP"><i>P波 初期微動</i><b>--</b></span>
+          <span class="wv s" id="wvS"><i>S波 主要動</i><b>--</b></span>
+        </div>
+        <p class="eew-fine">簡易走時と距離減衰式による推定値のため、<b>±数秒・±1階級程度</b>の誤差があります。</p>
+        <div class="legend" id="isoLegend" style="display:none">
+          予測震度域（破線）
+          <i style="background:#FAE696;color:#111">4</i>
+          <i style="background:#FFE600;color:#111">5-</i>
+          <i style="background:#FF2800;color:#fff">6-</i>
+        </div>
+      </div>
+      <div class="eew-side" id="cdBox">
+        <div class="cd-loc">
+          <b id="locName">東京（既定値）</b>
+          <button class="btn mini" id="btnLoc" type="button"><b>現在地</b><i>LOCATE</i></button>
+        </div>
+        <div class="cd-lead">S波到達まで<i>S-WAVE ARRIVAL IN</i></div>
+        <div class="cd-read"><span id="cdNum">--</span><span class="cd-unit">秒</span></div>
+        <div class="cd-bar" aria-hidden="true"><span id="cdBarFill"></span></div>
+        <div class="chip" id="chip"><i>予測震度</i><b id="chipNum">-</b></div>
+        <p class="cd-live" id="cdText" role="status" aria-live="polite">S波到達まで --秒</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
